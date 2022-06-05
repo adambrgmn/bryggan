@@ -1,11 +1,16 @@
-export interface SessionUser {
-  accessToken: string;
-  profile: Profile;
-}
+import * as z from 'zod';
 
-export interface Profile {
-  id: string;
-  email: string;
-  name: string;
-  avatar: string | null;
-}
+export const ProfileSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string(),
+  avatar: z.string().nullable(),
+});
+
+export const SessionUserSchema = z.object({
+  accessToken: z.string(),
+  profile: ProfileSchema,
+});
+
+export type Profile = z.infer<typeof ProfileSchema>;
+export type SessionUser = z.infer<typeof SessionUserSchema>;
