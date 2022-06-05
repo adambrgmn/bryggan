@@ -17,6 +17,6 @@ export default function Index() {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  let user = await authenticator.isAuthenticated(request, {});
+  let user = await authenticator.isAuthenticated(request);
   return { user };
 };

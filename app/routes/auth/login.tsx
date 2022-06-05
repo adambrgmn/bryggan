@@ -1,6 +1,16 @@
-import type { ActionFunction } from '@remix-run/node';
+import type { ActionFunction, LoaderFunction } from '@remix-run/node';
 
+import { SignIn } from '~/components/Auth';
 import { authenticator } from '~/services/auth.server';
+
+export default function Screen() {
+  return <SignIn />;
+}
+
+export let loader: LoaderFunction = async ({ request }) => {
+  await authenticator.isAuthenticated(request, { successRedirect: '/' });
+  return {};
+};
 
 export let action: ActionFunction = async ({ request }) => {
   // we call the method with the name of the strategy we want to use and the
