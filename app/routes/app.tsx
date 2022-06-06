@@ -26,7 +26,7 @@ export default function Screen() {
   );
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
   let user = await authenticator.isAuthenticated(request, { failureRedirect: '/auth/login' });
   return { profile: ProfileSchema.parse(user.profile) };
 };
