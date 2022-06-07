@@ -16,7 +16,7 @@ export let loader: LoaderFunction = async ({ request, params }) => {
   let folder = await client.listFolder({ path: `/${params.year}` });
   let folders = folder.entries
     .filter((entry): entry is FolderMetadata => entry['.tag'] === 'folder')
-    .sort((a, b) => a.path_lower.localeCompare(b.path_lower));
+    .sort((a, b) => b.path_lower.localeCompare(a.path_lower));
 
   let gridItems = folders.map<PreviewGridItem>((entry) => ({
     id: entry.id,

@@ -1,20 +1,20 @@
 import type { LoaderFunction } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import { Link, Outlet } from '@remix-run/react';
 
 import { SignOut } from '~/components/Auth';
+import { Breadcrumbs } from '~/components/Breadcrumbs';
 import { config } from '~/config';
 import { authenticator } from '~/services/auth.server';
 import { ProfileSchema } from '~/types/User';
 
 export default function Screen() {
-  let data = useLoaderData();
-  let profile = ProfileSchema.parse(data.profile);
-
   return (
     <div>
       <header className="flex justify-between">
-        <h1>Bryggan</h1>
-        <p>{profile.name}</p>
+        <h1>
+          <Link to=".">Bryggan</Link>
+        </h1>
+        <Breadcrumbs />
         <div>
           <SignOut />
         </div>
@@ -27,7 +27,7 @@ export default function Screen() {
   );
 }
 
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader: LoaderFunction = async ({ request }) => {
   let user = await authenticator.isAuthenticated(request, { failureRedirect: config['route.login'] });
   return { profile: ProfileSchema.parse(user.profile) };
 };
