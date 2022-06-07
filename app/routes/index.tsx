@@ -10,8 +10,7 @@ export default function Index() {
   return (
     <div>
       <h1>Welcome to Bryggan</h1>
-      {data.profile == null ? <SignIn /> : <Link to="/app">Go to app</Link>}
-      <img src="/preview/2018" alt="" />
+      {data.profile == null ? <SignIn /> : <Link to="/tidningen">Go to app</Link>}
     </div>
   );
 }
