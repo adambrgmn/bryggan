@@ -18,12 +18,12 @@ export let loader: LoaderFunction = async ({ request, params }) => {
     .filter((entry): entry is FolderMetadata => entry['.tag'] === 'folder')
     .sort((a, b) => b.path_lower.localeCompare(a.path_lower));
 
-  let gridItems = folders.map<PreviewGridItem>((entry) => ({
+  let issues = folders.map<PreviewGridItem>((entry) => ({
     id: entry.id,
     name: entry.name,
     href: `./${entry.name}`,
     previewPath: entry.path_lower,
   }));
 
-  return { items: gridItems };
+  return { items: issues };
 };

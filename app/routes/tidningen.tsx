@@ -11,10 +11,12 @@ export default function Screen() {
   return (
     <div>
       <header className="flex justify-between">
-        <h1>
-          <Link to=".">Bryggan</Link>
-        </h1>
-        <Breadcrumbs />
+        <div className="flex gap-2">
+          <h1>
+            <Link to=".">Bryggan</Link>
+          </h1>
+          <Breadcrumbs />
+        </div>
         <div>
           <SignOut />
         </div>
