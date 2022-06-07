@@ -1,7 +1,11 @@
 module.exports = {
-  content: ['./app/**/*.{js,ts,tsx}'],
+  content: ['./app/**/*.{js,jsx,ts,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      aspectRatio: {
+        paper: '128 / 165',
+      },
+    },
   },
   plugins: [],
 };
