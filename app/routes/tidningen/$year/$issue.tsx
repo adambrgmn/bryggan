@@ -2,8 +2,8 @@ import type { LoaderFunction } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { Fragment } from 'react';
 
-import type { PreviewGridItem } from '~/components/PreviewGrid';
-import { PagePreviewGrid } from '~/components/PreviewGrid';
+import type { PreviewGridItem } from '~/components';
+import { PagePreviewGrid } from '~/components';
 import { createDropboxClient } from '~/services/dropbox.server';
 import type { FileMetadata } from '~/types/Dropbox';
 import { parsePageName } from '~/utils/dropbox';

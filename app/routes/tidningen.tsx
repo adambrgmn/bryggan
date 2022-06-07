@@ -1,26 +1,16 @@
 import type { LoaderFunction } from '@remix-run/node';
-import { Link, Outlet } from '@remix-run/react';
+import { Outlet, useLoaderData } from '@remix-run/react';
 
-import { SignOut } from '~/components/Auth';
-import { Breadcrumbs } from '~/components/Breadcrumbs';
+import { Header } from '~/components';
 import { config } from '~/config';
 import { authenticator } from '~/services/auth.server';
 import { ProfileSchema } from '~/types/User';
 
 export default function Screen() {
+  let { profile } = useLoaderData();
   return (
-    <div>
-      <header className="flex justify-between">
-        <div className="flex gap-1 items-center">
-          <h1>
-            <Link to=".">Bryggan</Link>
-          </h1>
-          <Breadcrumbs />
-        </div>
-        <div>
-          <SignOut />
-        </div>
-      </header>
+    <div className="relative flex flex-col gap-6">
+      <Header profile={profile} />
       <main>
         <Outlet />
       </main>

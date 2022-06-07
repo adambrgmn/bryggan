@@ -65,7 +65,7 @@ const GridItem: React.FC<{ item: PreviewGridItem | null; tuple?: boolean }> = ({
   });
 
   const link = classNames({
-    'mt-2 flex justify-center text-sm': true,
+    'mt-2 flex justify-center text-xs': true,
     "after:content-[''] after:absolute after:inset-0": true,
     'focus:text-blue-500 hover:text-blue-500': true,
     'focus:outline-none': true,
