@@ -1,5 +1,6 @@
 import { Link } from '@remix-run/react';
 import { AnimatePresence, motion, useIsPresent } from 'framer-motion';
+import { ChevronRight } from 'react-feather';
 import useMeasure from 'react-use-measure';
 import * as z from 'zod';
 
@@ -24,7 +25,7 @@ export const Breadcrumbs: React.FC = () => {
   ]);
 
   return (
-    <ul className="flex gap-2">
+    <ul className="flex gap-1">
       <AnimatePresence initial={false}>
         {items.map((item) => (
           <Breadcrumb key={item.to} to={item.to} label={item.label} />
@@ -45,7 +46,9 @@ const Breadcrumb: React.FC<{ label: string; to: string }> = ({ label, to }) => {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -10, opacity: 0 }}
       style={isPresent ? {} : { position: 'absolute', top: bounds.top, left: bounds.left }}
+      className="flex gap-1 items-center"
     >
+      <ChevronRight size={16} />
       <Link to={to}>{label}</Link>
     </motion.li>
   );

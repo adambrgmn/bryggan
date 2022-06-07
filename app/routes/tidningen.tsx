@@ -11,7 +11,7 @@ export default function Screen() {
   return (
     <div>
       <header className="flex justify-between">
-        <div className="flex gap-2">
+        <div className="flex gap-1 items-center">
           <h1>
             <Link to=".">Bryggan</Link>
           </h1>
