@@ -36,7 +36,7 @@ export class DropboxClient {
   async #rpc(path: string, body: Record<string, unknown>, headersInit: Record<string, string> = {}): Promise<unknown> {
     if (this.#accessToken == null) {
       console.log('NO ACCESS TOKEN');
-      throw redirect('/auth/logout');
+      throw redirect(config['route.logout']);
     }
 
     let url = new URL(path, 'https://api.dropboxapi.com/2/');
@@ -54,7 +54,7 @@ export class DropboxClient {
     });
 
     if (response.ok && response.status === 200) return response.json();
-    if (response.status === 401) throw redirect('/auth/logout');
+    if (response.status === 401) throw redirect(config['route.logout']);
 
     if (process.env.NODE_ENV === 'development') {
       let text = await response.text();

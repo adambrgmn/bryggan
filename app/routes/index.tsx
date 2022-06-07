@@ -2,6 +2,7 @@ import type { LoaderFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 
 import { SignIn } from '~/components/Auth';
+import { config } from '~/config';
 import { authenticator } from '~/services/auth.server';
 
 export default function Index() {
@@ -16,6 +17,8 @@ export default function Index() {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  let user = await authenticator.isAuthenticated(request);
+  let user = await authenticator.isAuthenticated(request, {
+    failureRedirect: config['route.login'],
+  });
   return { profile: user?.profile };
 };
