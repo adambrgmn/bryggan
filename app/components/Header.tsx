@@ -40,7 +40,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ profile }) => {
   let { ref } = useHeaderContext();
   return (
-    <header ref={ref} className="flex justify-between px-4 py-2 sticky top-0 z-10 border-b bg-white">
+    <header ref={ref} className="flex justify-between px-6 py-2 sticky top-0 z-10 border-b bg-white">
       <div className="flex gap-1 items-center text-sm">
         <h1 className="font-semibold">
           <Link to=".">Bryggan</Link>
@@ -61,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({ profile }) => {
               </p>
             </div>
 
-            <Menu.MenuItems className="flex flex-col text-xs py-2">
+            <Menu.MenuItems className="flex flex-col text-xs p-0 py-2 border-0 bg-transparent">
               <MenuLink to="settings">Settings</MenuLink>
               <MenuLink to={config['route.logout']} destructive>
                 Sign out
@@ -81,9 +81,10 @@ const MenuLink: React.FC<{ to: string; destructive?: boolean; children: React.Re
 }) => {
   let className = classNames({
     'px-2 py-1': true,
-    'hover:bg-blue-500 hover:text-white': !destructive,
+    'hover:bg-blue-500 hover:text-white selected:bg-blue-500 selected:text-white': !destructive,
     'text-red-500 hover:bg-red-500 hover:text-white': destructive,
   });
+
   return (
     <Menu.MenuLink as={Link} to={to} className={className}>
       {children}

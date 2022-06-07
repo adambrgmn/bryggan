@@ -14,7 +14,7 @@ export default function App() {
   return (
     <div>
       {data.years.map((year) => (
-        <section key={year.year} className="relative mx-auto container mb-12 px-6 z-0">
+        <section key={year.year} className="relative">
           <Title year={year.year}>{year.year}</Title>
           <IssuePreviewGrid items={year.items} />
         </section>

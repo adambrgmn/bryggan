@@ -33,9 +33,7 @@ export function useBreadcrumbOverride() {
   let { setBreadcrumbs } = ctx;
 
   useEffect(() => {
-    return () => {
-      setBreadcrumbs(undefined);
-    };
+    return () => setBreadcrumbs(undefined);
   }, [setBreadcrumbs]);
 
   return setBreadcrumbs;

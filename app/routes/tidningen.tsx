@@ -13,7 +13,7 @@ export default function Screen() {
       <HeaderProvider>
         <div className="relative flex flex-col gap-6">
           <Header profile={profile} />
-          <main>
+          <main className="relative container mx-auto px-6">
             <Outlet />
           </main>
           <footer></footer>

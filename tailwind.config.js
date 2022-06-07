@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
+const plugin = require('tailwindcss/plugin');
 
 module.exports = {
   content: ['./app/**/*.{js,jsx,ts,tsx}'],
@@ -12,5 +13,10 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addVariant }) => {
+      // @reach/menu-button
+      addVariant('selected', '&[data-selected]');
+    }),
+  ],
 };
