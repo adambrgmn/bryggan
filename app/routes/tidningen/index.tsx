@@ -1,23 +1,14 @@
 import type { LoaderFunction } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 
-import { PagePreview } from '~/components';
+import type { PreviewGridItem } from '~/components/PreviewGrid';
+import { IssuePreviewGrid } from '~/components/PreviewGrid';
 import { createDropboxClient } from '~/services/dropbox.server';
 import type { FolderMetadata } from '~/types/Dropbox';
 
 export default function App() {
-  let data = useLoaderData<{ folders: FolderMetadata[] }>();
-
-  return (
-    <ul>
-      {data.folders.map((entry) => (
-        <li key={entry.id}>
-          <PagePreview path={entry.path_lower} />
-          <Link to={`./${entry.name}`}>{entry.name}</Link>
-        </li>
-      ))}
-    </ul>
-  );
+  let data = useLoaderData<{ items: PreviewGridItem[] }>();
+  return <IssuePreviewGrid items={data.items} />;
 }
 
 export let loader: LoaderFunction = async ({ request }) => {
@@ -25,7 +16,14 @@ export let loader: LoaderFunction = async ({ request }) => {
   let folder = await client.listFolder({ path: '/' });
   let folders = folder.entries
     .filter((entry): entry is FolderMetadata => entry['.tag'] === 'folder')
-    .sort((a, b) => a.path_lower.localeCompare(b.path_lower));
+    .sort((a, b) => b.path_lower.localeCompare(a.path_lower));
 
-  return { folders };
+  let gridItems = folders.map<PreviewGridItem>((entry) => ({
+    id: entry.id,
+    name: entry.name,
+    href: `./${entry.name}`,
+    previewPath: entry.path_lower,
+  }));
+
+  return { items: gridItems };
 };

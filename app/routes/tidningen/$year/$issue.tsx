@@ -1,24 +1,18 @@
 import type { LoaderFunction } from '@remix-run/node';
-import { Link, Outlet, useLoaderData } from '@remix-run/react';
+import { Outlet, useLoaderData } from '@remix-run/react';
 import { Fragment } from 'react';
 
-import { PagePreview } from '~/components';
+import type { PreviewGridItem } from '~/components/PreviewGrid';
+import { PagePreviewGrid } from '~/components/PreviewGrid';
 import { createDropboxClient } from '~/services/dropbox.server';
 import type { FileMetadata } from '~/types/Dropbox';
 
 export default function Issue() {
-  let data = useLoaderData<{ files: FileMetadata[] }>();
+  let data = useLoaderData<{ items: PreviewGridItem[] }>();
 
   return (
     <Fragment>
-      <ul>
-        {data.files.map((entry) => (
-          <li key={entry.id}>
-            <PagePreview path={entry.path_lower} />
-            <Link to={`./${entry.name}`}>{entry.name}</Link>
-          </li>
-        ))}
-      </ul>
+      <PagePreviewGrid items={data.items} />
       <Outlet />
     </Fragment>
   );
@@ -31,5 +25,12 @@ export let loader: LoaderFunction = async ({ request, params }) => {
     .filter((entry): entry is FileMetadata => entry['.tag'] === 'file')
     .sort((a, b) => a.path_lower.localeCompare(b.path_lower));
 
-  return { files };
+  let gridItems = files.map<PreviewGridItem>((entry) => ({
+    id: entry.id,
+    name: entry.name,
+    href: `./${entry.name}`,
+    previewPath: entry.path_lower,
+  }));
+
+  return { items: gridItems };
 };

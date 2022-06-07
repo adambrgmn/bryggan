@@ -12,7 +12,7 @@ export default function Screen() {
 
   return (
     <div>
-      <header>
+      <header className="flex justify-between">
         <h1>Bryggan</h1>
         <p>{profile.name}</p>
         <div>
