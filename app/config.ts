@@ -1,3 +1,3 @@
 export const config = {
-  'app.dropbox.root': '/Bryggan',
+  'app.dropbox.root': '/bryggan',
 };

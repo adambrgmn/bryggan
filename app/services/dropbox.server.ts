@@ -78,7 +78,7 @@ export class DropboxClient {
       ...headersInit,
     });
 
-    return fetch(url.toString(), { method: 'POST', headers });
+    return fetch(url.toString(), { method: 'GET', headers });
   }
 
   async listFolder(args: ListFolderArgs): Promise<ListFolderResult> {
@@ -105,17 +105,6 @@ export class DropboxClient {
     args = GetThumbnailArgsSchema.parse(args);
     let resource = { '.tag': 'path', path: this.#prependRoot(path) };
     return this.#content('files/get_thumbnail_v2', { resource, ...args });
-  }
-
-  thumbnailURL(entry: FolderMetadata | FileMetadata) {
-    let base = entry.path_display.replace(config['app.dropbox.root'], '');
-    let [year, issue = '01', page = `${year}-${issue}-001.pdf`] = base.split('/');
-    if (!year) throw new Error(`Invalid path given to previewImageUrl (${entry.path_display})`);
-
-    let previewPath = join(config['app.dropbox.root'], year, issue, page);
-
-    let url = new URL('https://content.dropboxapi.com/2/files/get_thumbnail_v2');
-    url.searchParams.append('path', previewPath);
   }
 
   #prependRoot(path: string) {
