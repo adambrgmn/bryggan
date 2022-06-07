@@ -51,12 +51,12 @@ export const PagePreviewGrid: React.FC<PreviewGridProps> = ({ items }) => {
 };
 
 const GridContainer: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
-  return <div className="container mx-auto px-6">{children}</div>;
+  return <div>{children}</div>;
 };
 
 const GridItem: React.FC<{ item: PreviewGridItem | null; tuple?: boolean }> = ({ item, tuple }) => {
   const container = classNames({
-    'relative p-2 border rounded': true,
+    'relative p-2 border rounded bg-white': true,
     'hover:outline focus-within:outline outline-1 outline-blue-500': item != null,
     'hover:bg-blue-50 focus-within:bg-blue-50': item != null,
 

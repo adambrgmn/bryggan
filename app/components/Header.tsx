@@ -1,19 +1,46 @@
 import * as Menu from '@reach/menu-button';
 import { Link } from '@remix-run/react';
 import classNames from 'classnames';
+import { createContext, useContext } from 'react';
+import type { RectReadOnly } from 'react-use-measure';
+import useMeasure from 'react-use-measure';
 
 import { config } from '~/config';
 import type { Profile } from '~/types/User';
 
 import { Breadcrumbs } from './Breadcrumbs';
 
+interface HeaderContextType {
+  ref: (element: HTMLElement | SVGElement | null) => void;
+  bounds: RectReadOnly;
+}
+
+export const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
+export const HeaderProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+  let [ref, bounds] = useMeasure();
+  return <HeaderContext.Provider value={{ ref, bounds }}>{children}</HeaderContext.Provider>;
+};
+
+function useHeaderContext() {
+  let ctx = useContext(HeaderContext);
+  if (ctx == null) throw new Error('useHeaderBounds is used outside the HeaderProvider');
+
+  return ctx;
+}
+
+export function useHeaderBounds() {
+  let { bounds } = useHeaderContext();
+  return bounds;
+}
+
 interface HeaderProps {
   profile: Profile;
 }
 
 export const Header: React.FC<HeaderProps> = ({ profile }) => {
+  let { ref } = useHeaderContext();
   return (
-    <header className="flex justify-between px-4 py-2 sticky top-0 z-10 border-b bg-white">
+    <header ref={ref} className="flex justify-between px-4 py-2 sticky top-0 z-10 border-b bg-white">
       <div className="flex gap-1 items-center text-sm">
         <h1 className="font-semibold">
           <Link to=".">Bryggan</Link>
