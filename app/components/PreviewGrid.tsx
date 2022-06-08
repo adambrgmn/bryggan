@@ -18,7 +18,7 @@ export interface PreviewGridProps {
 export const IssuePreviewGrid: React.FC<PreviewGridProps> = ({ items }) => {
   return (
     <GridContainer>
-      <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+      <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 relative z-0">
         {items.map((item) => (
           <GridItem key={item.id} item={item} />
         ))}
@@ -39,7 +39,7 @@ export const PagePreviewGrid: React.FC<PreviewGridProps> = ({ items }) => {
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {tuples.map(([left, right], index) => (
           <li key={left?.id ?? right?.id ?? index}>
-            <ul className="grid grid-cols-2 gap-0">
+            <ul className="grid grid-cols-2 gap-0 relative z-0">
               <GridItem item={left} tuple />
               <GridItem item={right} tuple />
             </ul>
@@ -59,6 +59,7 @@ const GridItem: React.FC<{ item: PreviewGridItem | null; tuple?: boolean }> = ({
     'relative p-2 border rounded bg-white': true,
     'hover:outline focus-within:outline outline-1 outline-blue-500': item != null,
     'hover:bg-blue-50 focus-within:bg-blue-50': item != null,
+    'z-0 hover:z-10 focus-within:z-10': item != null,
 
     'first:rounded-r-none': tuple,
     'last:rounded-l-none last:border-l-0': tuple,
