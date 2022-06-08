@@ -4,3 +4,7 @@ export function parsePageName(name: string): string {
   if (typeof match.groups?.page === 'string') return match.groups.page;
   return name;
 }
+
+export function formatPageName(page: number) {
+  return page.toString().padStart(3, '0');
+}

@@ -6,7 +6,7 @@ import type { PreviewGridItem } from '~/components';
 import { PagePreviewGrid } from '~/components';
 import { createDropboxClient } from '~/services/dropbox.server';
 import type { FileMetadata } from '~/types/Dropbox';
-import { parsePageName } from '~/utils/dropbox';
+import { formatPageName, parsePageName } from '~/utils/dropbox';
 
 export default function Issue() {
   let data = useLoaderData<{ items: PreviewGridItem[] }>();
@@ -29,7 +29,7 @@ export let loader: LoaderFunction = async ({ request, params }) => {
   let pages = files.map<PreviewGridItem>((entry) => ({
     id: entry.id,
     name: parsePageName(entry.name),
-    href: `./${entry.name}`,
+    href: `./${formatPageName(Number(parsePageName(entry.name)))}`,
     previewPath: entry.path_lower,
   }));
 

@@ -1,8 +1,8 @@
 import { useParams } from '@remix-run/react';
 import { useMemo } from 'react';
-import type { ZodType } from 'zod';
+import type { ZodTypeAny, output } from 'zod';
 
-export function useSafeParams<T>(schema: ZodType<T>): T {
+export function useSafeParams<T extends ZodTypeAny>(schema: T): output<T> {
   let params = useParams();
   return useMemo(() => schema.parse(params), [params, schema]);
 }
