@@ -2,6 +2,7 @@ node_modules
 
 /.cache
 /public/build
+/public/vendor
 /.netlify
 .env
 /app/styles/app.css

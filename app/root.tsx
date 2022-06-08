@@ -1,3 +1,4 @@
+import dialogStyles from '@reach/dialog/styles.css';
 import menuButtonStyles from '@reach/menu-button/styles.css';
 import type { MetaFunction } from '@remix-run/node';
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
@@ -10,6 +11,7 @@ export function links() {
   return [
     { rel: 'stylesheet', href: fonts },
     { rel: 'stylesheet', href: menuButtonStyles },
+    { rel: 'stylesheet', href: dialogStyles },
     { rel: 'stylesheet', href: styles },
   ];
 }

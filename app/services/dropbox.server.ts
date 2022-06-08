@@ -107,6 +107,11 @@ export class DropboxClient {
     return this.#content('files/get_thumbnail_v2', { resource, ...args });
   }
 
+  download(path: string): Promise<Response> {
+    path = this.#prependRoot(path);
+    return this.#content('files/download', { path });
+  }
+
   #prependRoot(path: string) {
     return join(config['app.dropbox.root'], path);
   }

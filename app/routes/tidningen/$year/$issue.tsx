@@ -13,8 +13,8 @@ export default function Issue() {
 
   return (
     <Fragment>
+      <Outlet context={{ total: data.items.length }} />
       <PagePreviewGrid items={data.items} />
-      <Outlet />
     </Fragment>
   );
 }

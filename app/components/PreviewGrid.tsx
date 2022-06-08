@@ -1,6 +1,6 @@
 import { Link } from '@remix-run/react';
 import classNames from 'classnames';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
 import { PagePreview } from './PagePreview';
 
