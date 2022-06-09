@@ -2,7 +2,7 @@ import { Link } from '@remix-run/react';
 import classNames from 'classnames';
 import { Fragment } from 'react';
 
-import { PagePreview } from './PagePreview';
+import { PageThumbnail } from './PageThumbnail';
 
 export interface PreviewGridItem {
   id: string;
@@ -76,7 +76,7 @@ const GridItem: React.FC<{ item: PreviewGridItem | null; tuple?: boolean }> = ({
     <li className={container}>
       {item != null ? (
         <Fragment>
-          <PagePreview path={item.previewPath} size="w256h256" className="mix-blend-multiply" />
+          <PageThumbnail path={item.previewPath} size="w256h256" className="mix-blend-multiply" />
           <Link to={item.href} className={link}>
             {item.name}
           </Link>

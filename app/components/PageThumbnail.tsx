@@ -3,13 +3,13 @@ import classNames from 'classnames';
 import { config } from '~/config';
 import type { ThumbnailSize } from '~/types/Dropbox';
 
-interface PagePreviewProps {
+interface PageThumbnailProps {
   path: string;
   size?: ThumbnailSize;
   className?: string;
 }
 
-export const PagePreview: React.FC<PagePreviewProps> = ({ path, className }) => {
+export const PageThumbnail: React.FC<PageThumbnailProps> = ({ path, className }) => {
   let width = widthMap['w480h320'];
   let height = Math.round(width / config['app.dropbox.aspect_ratio']);
 
