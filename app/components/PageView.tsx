@@ -1,12 +1,12 @@
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import { Link, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
-import { Fragment, cloneElement, startTransition, useEffect, useRef, useState, useTransition } from 'react';
+import { cloneElement, startTransition, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Loader, X, ZoomIn, ZoomOut } from 'react-feather';
 import { Document, Page, pdfjs } from 'react-pdf';
 import useMeasure from 'react-use-measure';
 
-import { useIsomorphicLayoutEffect, useWindowEvent } from '~/hooks';
+import { useWindowEvent } from '~/hooks';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.js';
 
@@ -110,7 +110,7 @@ const Controls: React.FC<ControlsProps> = ({ next, previous, current, total, sca
   });
 
   return (
-    <div className="sticky bottom-4 w-auto flex items-center gap-2 mx-auto rounded-2xl border flex-none bg-white">
+    <div className="fixed bottom-10 w-auto flex items-center gap-2 mx-auto rounded-2xl border flex-none bg-white">
       <PaginationLink to={previous ? `../${previous}` : undefined} label="Previous" icon={<ChevronLeft />} />
       <span className="text-xs tabular-nums">
         {current} / {total}
