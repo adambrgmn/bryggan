@@ -36,7 +36,7 @@ export const PageView: React.FC<PageViewProps> = ({ path, next, previous, curren
   return (
     <DialogOverlay isOpen onDismiss={() => navigate('..')} className="z-20" initialFocusRef={initialFocusRef}>
       <DialogContent
-        className="relative m-4 p-4 flex flex-col items-center w-auto h-[calc(100vh-2rem)] overflow-scroll rounded"
+        className="relative m-4 p-4 flex flex-col items-center w-auto h-[calc(100vh-2rem)] overflow-hidden rounded"
         aria-label="Page preview"
       >
         <PdfDocument key={path} path={path} scale={scale} />

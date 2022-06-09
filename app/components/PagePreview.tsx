@@ -9,23 +9,40 @@ interface PagePreviewProps {
   className?: string;
 }
 
-export const PagePreview: React.FC<PagePreviewProps> = ({ path, size = 'w128h128', className }) => {
-  let url = new URL('.' + path, 'http://localhost:3000/api/preview/');
-  url.searchParams.set('size', size);
-  url.searchParams.set('format', 'png');
-
-  let width = widthMap[size];
+export const PagePreview: React.FC<PagePreviewProps> = ({ path, className }) => {
+  let width = widthMap['w480h320'];
   let height = Math.round(width / config['app.dropbox.aspect_ratio']);
 
+  const src = (size: ThumbnailSize, skipW = false) => {
+    let url = new URL('.' + path, 'http://localhost:3000/api/preview/');
+    url.searchParams.set('size', size);
+    url.searchParams.set('format', 'png');
+
+    let base = `${url.pathname}${url.search}`;
+    if (skipW) return base;
+
+    let width = widthMap[size];
+    return `${base} ${width}w`;
+  };
+
   return (
-    <img
-      className={classNames('aspect-paper w-full h-auto', className)}
-      src={`${url.pathname}${url.search}`}
-      alt=""
-      width={width}
-      height={height}
-      loading="lazy"
-    />
+    <picture>
+      <source srcSet={src('w256h256')} media="(min-width: 1536px)" />
+      <source srcSet={src('w256h256')} media="(min-width: 1280px)" />
+      <source srcSet={src('w256h256')} media="(min-width: 1024px)" />
+      <source srcSet={src('w256h256')} media="(min-width: 768px)" />
+      <source srcSet={src('w128h128')} media="(min-width: 640px)" />
+      <source srcSet={src('w256h256')} media="(min-width: 425px)" />
+      <source srcSet={src('w128h128')} />
+      <img
+        className={classNames('aspect-paper w-full h-auto', className)}
+        src={src('w480h320', true)}
+        alt=""
+        width={width}
+        height={height}
+        loading="lazy"
+      />
+    </picture>
   );
 };
 
