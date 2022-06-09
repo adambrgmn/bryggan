@@ -35,7 +35,6 @@ export class DropboxClient {
 
   async #rpc(path: string, body: Record<string, unknown>, headersInit: Record<string, string> = {}): Promise<unknown> {
     if (this.#accessToken == null) {
-      console.log('NO ACCESS TOKEN');
       throw redirect(config['route.logout']);
     }
 
@@ -66,7 +65,6 @@ export class DropboxClient {
 
   #content(path: string, body: Record<string, unknown>, headersInit: Record<string, string> = {}): Promise<Response> {
     if (this.#accessToken == null) {
-      console.log('NO ACCESS TOKEN');
       throw new Response('', { status: 401 });
     }
 

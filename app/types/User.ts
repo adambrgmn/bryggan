@@ -9,6 +9,8 @@ export const ProfileSchema = z.object({
 
 export const SessionUserSchema = z.object({
   accessToken: z.string(),
+  refreshToken: z.string(),
+  expiryDate: z.number(),
   profile: ProfileSchema,
 });
 
