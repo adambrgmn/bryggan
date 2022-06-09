@@ -9,7 +9,7 @@ module.exports = {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
       aspectRatio: {
-        paper: '128 / 165',
+        paper: '233 / 303',
       },
     },
   },
