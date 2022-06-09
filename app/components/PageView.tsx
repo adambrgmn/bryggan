@@ -1,11 +1,14 @@
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import { Link, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
+import { AnimatePresence, motion } from 'framer-motion';
 import { cloneElement, startTransition, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Loader, X, ZoomIn, ZoomOut } from 'react-feather';
 import { Document, Page, pdfjs } from 'react-pdf';
+import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
 
+import { config } from '~/config';
 import { useWindowEvent } from '~/hooks';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.js';
@@ -21,7 +24,9 @@ interface PageViewProps {
 export const PageView: React.FC<PageViewProps> = ({ path, next, previous, current, total }) => {
   let navigate = useNavigate();
   let [scale, setScale] = useState(1);
+
   let initialFocusRef = useRef<HTMLButtonElement>(null);
+  let [wrapperRef, bounds] = useMeasure();
 
   const handleZoom = (amount: number | 'reset') => {
     startTransition(() => {
@@ -36,10 +41,13 @@ export const PageView: React.FC<PageViewProps> = ({ path, next, previous, curren
   return (
     <DialogOverlay isOpen onDismiss={() => navigate('..')} className="z-20" initialFocusRef={initialFocusRef}>
       <DialogContent
+        ref={wrapperRef}
         className="relative m-4 p-4 flex flex-col items-center w-auto h-[calc(100vh-2rem)] overflow-hidden rounded"
         aria-label="Page preview"
       >
-        <PdfDocument key={path} path={path} scale={scale} />
+        <AnimatePresence initial={false}>
+          <PdfDocument key={path} path={path} scale={scale} bounds={bounds} />
+        </AnimatePresence>
 
         <Controls
           next={next}
@@ -55,20 +63,31 @@ export const PageView: React.FC<PageViewProps> = ({ path, next, previous, curren
   );
 };
 
-const PdfDocument: React.FC<{ path: string; scale: number }> = ({ path, scale }) => {
+const PdfDocument: React.FC<{ path: string; scale: number; bounds: RectReadOnly }> = ({ path, scale, bounds }) => {
   let [ready, setReady] = useState(false);
-  let [wrapperRef, wrapperBounds] = useMeasure();
+  let className = classNames({
+    'transition-opacity': true,
+    'opacity-1': ready,
+    'opacity-0': !ready,
+  });
 
-  let className = classNames({ visible: ready, hidden: !ready });
+  let height = bounds.height - 2 * 16;
+  let width = height * (config['app.dropbox.aspect_width'] / config['app.dropbox.aspect_height']);
 
   return (
-    <div ref={wrapperRef} className="relative h-auto min-h-full aspect-paper border rounded overflow-scroll">
-      {ready ? null : <Spinner />}
+    <motion.div
+      className="absolute border rounded overflow-scroll"
+      style={{ width, height }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <AnimatePresence initial={false}>{ready ? null : <Spinner key="spinner" />}</AnimatePresence>
 
       <Document file={`/api/content/${path}`} className={className}>
-        <Page pageNumber={1} width={wrapperBounds.width * scale} onRenderSuccess={() => setReady(true)} />
+        <Page pageNumber={1} width={width * scale} onRenderSuccess={() => setReady(true)} />
       </Document>
-    </div>
+    </motion.div>
   );
 };
 
@@ -179,8 +198,13 @@ const ControlsDivider: React.FC = () => {
 
 const Spinner: React.FC = () => {
   return (
-    <div className="absolute inset-0 flex items-center justify-center">
+    <motion.div
+      className="absolute inset-0 flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <Loader className="animate-spin" />
-    </div>
+    </motion.div>
   );
 };
