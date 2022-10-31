@@ -4,6 +4,7 @@ node_modules
 build
 public/build
 public/vendor
+app/styles/app.css
 .env
 
-app/styles/app.css
+.husky
