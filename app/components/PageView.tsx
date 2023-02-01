@@ -9,7 +9,7 @@ import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
 
 import { config } from '~/config';
-import { useWindowEvent } from '~/hooks';
+import { useWindowEvent } from '~/hooks/use-window-event';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.js';
 
@@ -42,7 +42,7 @@ export const PageView: React.FC<PageViewProps> = ({ path, next, previous, curren
     <DialogOverlay isOpen onDismiss={() => navigate('..')} className="z-20" initialFocusRef={initialFocusRef}>
       <DialogContent
         ref={wrapperRef}
-        className="relative m-4 p-4 flex flex-col items-center w-auto h-[calc(100vh-2rem)] overflow-hidden rounded"
+        className="relative m-4 flex h-[calc(100vh-2rem)] w-auto flex-col items-center overflow-hidden rounded p-4"
         aria-label="Page preview"
       >
         <AnimatePresence initial={false}>
@@ -76,7 +76,7 @@ const PdfDocument: React.FC<{ path: string; scale: number; bounds: RectReadOnly 
 
   return (
     <motion.div
-      className="absolute border rounded overflow-scroll"
+      className="absolute overflow-scroll rounded border"
       style={{ width, height }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -129,7 +129,7 @@ const Controls: React.FC<ControlsProps> = ({ next, previous, current, total, sca
   });
 
   return (
-    <div className="fixed bottom-10 w-auto flex items-center gap-2 mx-auto rounded-2xl border flex-none bg-white">
+    <div className="fixed bottom-10 mx-auto flex w-auto flex-none items-center gap-2 rounded-2xl border bg-white">
       <PaginationLink to={previous ? `../${previous}` : undefined} label="Previous" icon={<ChevronLeft />} />
       <span className="text-xs tabular-nums">
         {current} / {total}
@@ -193,7 +193,7 @@ const ZoomButton: React.FC<{ label: string; icon: React.ReactElement<{ size?: nu
 };
 
 const ControlsDivider: React.FC = () => {
-  return <hr className="w-px h-[calc(100%-8px)] bg-gray-200" />;
+  return <hr className="h-[calc(100%-8px)] w-px bg-gray-200" />;
 };
 
 const Spinner: React.FC = () => {

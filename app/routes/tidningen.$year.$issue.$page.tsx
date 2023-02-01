@@ -1,37 +1,35 @@
+import type { LoaderArgs } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { useOutletContext } from '@remix-run/react';
 import * as z from 'zod';
 
-import { PageView } from '~/components';
-import { useSafeParams } from '~/hooks';
+import { PageView } from '~/components/PageView';
+import { useSafeParams } from '~/hooks/use-safe-params';
 import { formatPageName } from '~/utils/dropbox';
 
 let PageParamsSchema = z.object({
   year: z.string(),
   issue: z.string(),
-  page: z.string().transform((val, ctx) => {
-    const parsed = parseInt(val);
-
-    if (Number.isNaN(parsed)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Not a number',
-      });
-    }
-
-    return parsed;
-  }),
+  page: z.coerce.number(),
 });
 
 let OutletContextSchema = z.object({ total: z.number().min(1) });
+
+export function loader(ctx: LoaderArgs) {
+  try {
+    PageParamsSchema.parse(ctx.params);
+    return {};
+  } catch {
+    return redirect('..');
+  }
+}
 
 export default function Page() {
   let context = OutletContextSchema.parse(useOutletContext());
   let params = useSafeParams(PageParamsSchema);
   let path = buildFileName(params);
 
-  let current = Number(params.page);
-  if (Number.isNaN(current)) current = 1;
-
+  let current = params.page;
   let next: string | undefined = undefined;
   let previous: string | undefined = undefined;
 

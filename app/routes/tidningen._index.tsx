@@ -3,8 +3,10 @@ import { useLoaderData } from '@remix-run/react';
 import { useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-import type { PreviewGridItem } from '~/components';
-import { IssuePreviewGrid, useBreadcrumbOverride, useHeaderBounds } from '~/components';
+import type { PreviewGridItem } from '~/components/PreviewGrid';
+import { IssuePreviewGrid } from '~/components/PreviewGrid';
+import { useBreadcrumbOverride } from '~/components/Breadcrumbs';
+import { useHeaderBounds } from '~/components/Header';
 import { createDropboxClient } from '~/services/dropbox.server';
 import type { FolderMetadata } from '~/types/Dropbox';
 
@@ -42,7 +44,7 @@ const Title: React.FC<React.PropsWithChildren<{ year: string }>> = ({ year, chil
   });
 
   return (
-    <h2 ref={ref} className="mb-6 sticky top-0">
+    <h2 ref={ref} className="sticky top-0 mb-6">
       {children}
     </h2>
   );

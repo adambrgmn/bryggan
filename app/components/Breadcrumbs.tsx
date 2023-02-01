@@ -5,7 +5,7 @@ import { ChevronRight } from 'react-feather';
 import useMeasure from 'react-use-measure';
 import * as z from 'zod';
 
-import { useSafeParams } from '~/hooks';
+import { useSafeParams } from '~/hooks/use-safe-params';
 import { compact } from '~/utils/array';
 import { parsePageName } from '~/utils/dropbox';
 
@@ -81,7 +81,7 @@ const Breadcrumb: React.FC<{ label: string; to: string }> = ({ label, to }) => {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -10, opacity: 0 }}
       style={isPresent ? {} : { position: 'absolute', top: bounds.top, left: bounds.left }}
-      className="flex gap-1 items-center text-gray-600"
+      className="flex items-center gap-1 text-gray-600"
     >
       <ChevronRight size={16} className="text-gray-300" />
       <Link to={to} className="hover:text-blue-500 focus:text-blue-500">
