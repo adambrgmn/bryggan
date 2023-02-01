@@ -1,5 +1,6 @@
 import dialogStyles from '@reach/dialog/styles.css';
 import menuButtonStyles from '@reach/menu-button/styles.css';
+import reactPdfStyles from 'react-pdf/dist/esm/Page/TextLayer.css';
 import type { MetaFunction } from '@remix-run/node';
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
 import { StrictMode } from 'react';
@@ -12,6 +13,7 @@ export function links() {
     { rel: 'stylesheet', href: fonts },
     { rel: 'stylesheet', href: menuButtonStyles },
     { rel: 'stylesheet', href: dialogStyles },
+    { rel: 'stylesheet', href: reactPdfStyles },
     { rel: 'stylesheet', href: styles },
   ];
 }
