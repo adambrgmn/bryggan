@@ -18,7 +18,7 @@ export interface PreviewGridProps {
 export const IssuePreviewGrid: React.FC<PreviewGridProps> = ({ items }) => {
   return (
     <GridContainer>
-      <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 relative z-0">
+      <ul className="relative z-0 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
         {items.map((item) => (
           <GridItem key={item.id} item={item} />
         ))}
@@ -36,10 +36,10 @@ export const PagePreviewGrid: React.FC<PreviewGridProps> = ({ items }) => {
 
   return (
     <GridContainer>
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {tuples.map(([left, right], index) => (
           <li key={left?.id ?? right?.id ?? index}>
-            <ul className="grid grid-cols-2 gap-0 relative z-0">
+            <ul className="relative z-0 grid grid-cols-2 gap-0">
               <GridItem item={left} tuple />
               <GridItem item={right} tuple />
             </ul>

@@ -1,11 +1,23 @@
-import type { LoaderFunction } from '@remix-run/node';
+import type { HtmlMetaDescriptor, LoaderFunction } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 
 import { BreadcrumbProvider } from '~/components/Breadcrumbs';
 import { Header, HeaderProvider } from '~/components/Header';
 import { config } from '~/config';
-import { authenticator } from '~/services/auth.server';
+import { authenticator, refresher } from '~/services/auth.server';
 import { ProfileSchema } from '~/types/User';
+
+export function meta(): HtmlMetaDescriptor {
+  return {
+    title: 'Tidningen | Bryggan',
+  };
+}
+
+export const loader: LoaderFunction = async ({ request }) => {
+  let user = await authenticator.isAuthenticated(request, { failureRedirect: config['route.login'] });
+  await refresher.checkTokenExpiry(request, user);
+  return { profile: ProfileSchema.parse(user.profile) };
+};
 
 export default function Screen() {
   let { profile } = useLoaderData();
@@ -23,11 +35,6 @@ export default function Screen() {
     </BreadcrumbProvider>
   );
 }
-
-export const loader: LoaderFunction = async ({ request }) => {
-  let user = await authenticator.isAuthenticated(request, { failureRedirect: config['route.login'] });
-  return { profile: ProfileSchema.parse(user.profile) };
-};
 
 export function ErrorBoundary({ error }: { error: Error }) {
   return (

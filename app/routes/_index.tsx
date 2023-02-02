@@ -3,7 +3,7 @@ import { Link, useLoaderData } from '@remix-run/react';
 
 import { SignIn } from '~/components/Auth';
 import { config } from '~/config';
-import { authenticator, refresher } from '~/services/auth.server';
+import { authenticator } from '~/services/auth.server';
 
 export default function Index() {
   let data = useLoaderData();
@@ -18,6 +18,5 @@ export default function Index() {
 
 export const loader: LoaderFunction = async ({ request }) => {
   let user = await authenticator.isAuthenticated(request, { failureRedirect: config['route.login'] });
-  await refresher.checkTokenExpiry(request, user);
   return { profile: user?.profile };
 };

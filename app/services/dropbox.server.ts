@@ -46,7 +46,7 @@ export class DropboxClient {
       ...headersInit,
     });
 
-    let response = await fetch(url.toString(), {
+    let response = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
@@ -76,7 +76,7 @@ export class DropboxClient {
       ...headersInit,
     });
 
-    return fetch(url.toString(), { method: 'GET', headers });
+    return fetch(url, { method: 'GET', headers });
   }
 
   async listFolder(args: ListFolderArgs): Promise<ListFolderResult> {

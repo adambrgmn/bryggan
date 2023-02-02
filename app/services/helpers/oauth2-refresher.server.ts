@@ -1,4 +1,4 @@
-import type { Session, SessionStorage} from '@remix-run/node';
+import type { Session, SessionStorage } from '@remix-run/node';
 import { redirect } from '@remix-run/node';
 import createDebug from 'debug';
 import type { Authenticator } from 'remix-auth';
@@ -23,11 +23,6 @@ export class Oauth2Refresher<User extends RefresherBaseUser> {
   }
 
   async checkTokenExpiry(request: Request, user?: User | undefined | null): Promise<void> {
-    if (user == null) {
-      debug('No user provided as argument, fetching from session.');
-      [user] = await this.#getSession(request);
-    }
-
     if (user == null) {
       debug('No user found in session, ignoring.');
       return;
@@ -133,7 +128,7 @@ interface RefreshOptions {
 }
 
 interface RefreshResponse {
-  toen_type: 'bearer';
+  token_type: 'bearer';
   access_token: string;
   expires_in: number;
 }

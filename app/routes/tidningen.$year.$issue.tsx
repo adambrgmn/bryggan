@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/node';
+import type { DataFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Outlet, useCatch, useLoaderData } from '@remix-run/react';
 import { Fragment } from 'react';
 
@@ -9,18 +9,13 @@ import { createDropboxClient } from '~/services/dropbox.server';
 import type { FileMetadata } from '~/types/Dropbox';
 import { formatPageName, parsePageName } from '~/utils/dropbox';
 
-export default function Issue() {
-  let data = useLoaderData<{ items: PreviewGridItem[] }>();
+export const meta: MetaFunction<typeof loader> = (args) => {
+  return {
+    title: `${args.params['year']}-${args.params['issue']} | Bryggan`,
+  };
+};
 
-  return (
-    <Fragment>
-      <Outlet context={{ total: data.items.length }} />
-      <PagePreviewGrid items={data.items} />
-    </Fragment>
-  );
-}
-
-export let loader: LoaderFunction = async ({ request, params }) => {
+export async function loader({ request, params }: DataFunctionArgs) {
   try {
     let client = await createDropboxClient(request);
     let folder = await client.listFolder({ path: `/${params.year}/${params.issue}` });
@@ -39,7 +34,18 @@ export let loader: LoaderFunction = async ({ request, params }) => {
   } catch {
     throw new Response('Not found', { status: 404 });
   }
-};
+}
+
+export default function Issue() {
+  let data = useLoaderData<typeof loader>();
+
+  return (
+    <Fragment>
+      <Outlet context={{ total: data.items.length }} />
+      <PagePreviewGrid items={data.items} />
+    </Fragment>
+  );
+}
 
 export function CatchBoundary() {
   const caught = useCatch();

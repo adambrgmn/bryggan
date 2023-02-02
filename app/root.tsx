@@ -1,14 +1,14 @@
 import dialogStyles from '@reach/dialog/styles.css';
 import menuButtonStyles from '@reach/menu-button/styles.css';
 import reactPdfStyles from 'react-pdf/dist/esm/Page/TextLayer.css';
-import type { MetaFunction } from '@remix-run/node';
+import type { HtmlMetaDescriptor, LinkDescriptor } from '@remix-run/node';
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
 import { StrictMode } from 'react';
 
 import styles from './styles/app.css';
 import fonts from './styles/fonts.css';
 
-export function links() {
+export function links(): LinkDescriptor[] {
   return [
     { rel: 'stylesheet', href: fonts },
     { rel: 'stylesheet', href: menuButtonStyles },
@@ -18,11 +18,13 @@ export function links() {
   ];
 }
 
-export const meta: MetaFunction = () => ({
-  charset: 'utf-8',
-  title: 'New Remix App',
-  viewport: 'width=device-width,initial-scale=1',
-});
+export function meta(): HtmlMetaDescriptor {
+  return {
+    charset: 'utf-8',
+    title: 'Bryggan | Sjöfartstidningen',
+    viewport: 'width=device-width,initial-scale=1',
+  };
+}
 
 export default function App() {
   return (

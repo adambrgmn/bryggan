@@ -1,5 +1,5 @@
 import createDebug from 'debug';
-import type { OAuth2Profile} from 'remix-auth-oauth2';
+import type { OAuth2Profile } from 'remix-auth-oauth2';
 import { OAuth2Strategy } from 'remix-auth-oauth2';
 import * as z from 'zod';
 
@@ -7,10 +7,8 @@ const debug = createDebug('auth:dropbox');
 
 export class DropboxOAuth2Strategy<User> extends OAuth2Strategy<User, OAuth2Profile, DropboxExtraParams> {
   protected async userProfile(accessToken: string): Promise<OAuth2Profile> {
-    let response = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    let url = new URL('https://api.dropboxapi.com/2/users/get_current_account');
+    let response = await fetch(url, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` } });
 
     let account = DropboxAccountSchema.parse(await response.json());
     debug('Dropbox account fetched: %O', account);

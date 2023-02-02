@@ -35,7 +35,7 @@ export const PageThumbnail: React.FC<PageThumbnailProps> = ({ path, className })
       <source srcSet={src('w256h256')} media="(min-width: 425px)" />
       <source srcSet={src('w128h128')} />
       <img
-        className={classNames('aspect-paper w-full h-auto', className)}
+        className={classNames('aspect-paper h-auto w-full', className)}
         src={src('w480h320', true)}
         alt=""
         width={width}

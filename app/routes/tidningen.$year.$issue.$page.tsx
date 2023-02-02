@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/node';
+import type { LoaderArgs, MetaFunction } from '@remix-run/node';
 import { redirect } from '@remix-run/node';
 import { useOutletContext } from '@remix-run/react';
 import * as z from 'zod';
@@ -15,12 +15,16 @@ let PageParamsSchema = z.object({
 
 let OutletContextSchema = z.object({ total: z.number().min(1) });
 
-export function loader(ctx: LoaderArgs) {
+export const meta: MetaFunction<typeof loader> = (args) => {
+  return { title: `${args.params['year']}-${args.params['issue']}-${args.params['page']} | Bryggan` };
+};
+
+export async function loader(ctx: LoaderArgs) {
   try {
     PageParamsSchema.parse(ctx.params);
     return {};
   } catch {
-    return redirect('..');
+    throw redirect('..');
   }
 }
 
