@@ -4,7 +4,7 @@ import type { HtmlMetaDescriptor, LinkDescriptor } from '@remix-run/node';
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
 import { StrictMode } from 'react';
 
-import styles from './styles/app.css';
+import stylesheet from './styles/app.css';
 import fonts from './styles/fonts.css';
 
 export function links(): LinkDescriptor[] {
@@ -12,7 +12,7 @@ export function links(): LinkDescriptor[] {
     { rel: 'stylesheet', href: fonts },
     { rel: 'stylesheet', href: menuButtonStyles },
     { rel: 'stylesheet', href: dialogStyles },
-    { rel: 'stylesheet', href: styles },
+    { rel: 'stylesheet', href: stylesheet },
   ];
 }
 

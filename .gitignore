@@ -5,5 +5,3 @@ build
 public/build
 public/vendor
 .env
-
-app/styles/app.css
