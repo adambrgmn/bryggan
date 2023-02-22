@@ -55,6 +55,8 @@ export class DropboxClient extends Dropbox {
   redirectUri: string;
   session?: DropboxSession;
 
+  contentUrl = new URL('https://content.dropboxapi.com/2/');
+
   static async fromRequest(req: Request) {
     let client = new DropboxClient({
       clientId: CLIENT_ID,
@@ -145,8 +147,17 @@ export class DropboxClient extends Dropbox {
     let [year, issue = '01', page = `${year}-${issue}-001.pdf`] = path.replace(/^\//, '').split('/');
     let pathname = join(config['app.dropbox.root'], year, issue, page);
 
-    let url = new URL('https://content.dropboxapi.com/2/files/get_thumbnail_v2');
+    let url = new URL('files/get_thumbnail_v2', this.contentUrl);
     url.searchParams.set('arg', JSON.stringify({ resource: { '.tag': 'path', path: pathname } }));
+    url.searchParams.set('authorization', `Bearer ${this.auth.getAccessToken()}`);
+    if (this.pathRoot) url.searchParams.set('path_root', this.pathRoot);
+
+    return url.toString();
+  }
+
+  getDownloadUrl(path: string) {
+    let url = new URL('files/download', this.contentUrl);
+    url.searchParams.set('arg', JSON.stringify({ path }));
     url.searchParams.set('authorization', `Bearer ${this.auth.getAccessToken()}`);
     if (this.pathRoot) url.searchParams.set('path_root', this.pathRoot);
 

@@ -14,14 +14,14 @@ import { useWindowEvent } from '~/hooks/use-window-event';
 pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.js';
 
 interface PageViewProps {
-  path: string;
+  url: string;
   next: string | undefined;
   previous: string | undefined;
   current: number;
   total: number;
 }
 
-export const PageView: React.FC<PageViewProps> = ({ path, next, previous, current, total }) => {
+export const PageView: React.FC<PageViewProps> = ({ url, next, previous, current, total }) => {
   let navigate = useNavigate();
   let [scale, setScale] = useState(1);
 
@@ -46,7 +46,7 @@ export const PageView: React.FC<PageViewProps> = ({ path, next, previous, curren
         aria-label="Page preview"
       >
         <AnimatePresence initial={false}>
-          <PdfDocument key={path} path={path} scale={scale} bounds={bounds} />
+          <PdfDocument key={url} url={url} scale={scale} bounds={bounds} />
         </AnimatePresence>
 
         <Controls
@@ -63,7 +63,7 @@ export const PageView: React.FC<PageViewProps> = ({ path, next, previous, curren
   );
 };
 
-const PdfDocument: React.FC<{ path: string; scale: number; bounds: RectReadOnly }> = ({ path, scale, bounds }) => {
+const PdfDocument: React.FC<{ url: string; scale: number; bounds: RectReadOnly }> = ({ url, scale, bounds }) => {
   let [ready, setReady] = useState(false);
   let className = classNames({
     'transition-opacity': true,
@@ -84,14 +84,14 @@ const PdfDocument: React.FC<{ path: string; scale: number; bounds: RectReadOnly 
     >
       <AnimatePresence initial={false}>{ready ? null : <Spinner key="spinner" />}</AnimatePresence>
 
-      <Document file={`/api/content/${path}`} className={className}>
+      <Document file={url} className={className}>
         <Page pageNumber={1} width={width * scale} onRenderSuccess={() => setReady(true)} />
       </Document>
     </motion.div>
   );
 };
 
-interface ControlsProps extends Omit<PageViewProps, 'path'> {
+interface ControlsProps extends Omit<PageViewProps, 'url'> {
   scale: number;
   setScale: (amount: number | 'reset') => void;
   initialFocusRef: React.RefObject<HTMLButtonElement>;
