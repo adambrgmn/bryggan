@@ -1,11 +1,10 @@
-import type { HtmlMetaDescriptor, LoaderFunction } from '@remix-run/node';
+import type { HtmlMetaDescriptor, LoaderArgs } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 
 import { BreadcrumbProvider } from '~/components/Breadcrumbs';
 import { Header, HeaderProvider } from '~/components/Header';
-import { config } from '~/config';
-import { authenticator, refresher } from '~/services/auth.server';
-import { ProfileSchema } from '~/types/User';
+import { DropboxClient } from '~/services/dropbox.server';
 
 export function meta(): HtmlMetaDescriptor {
   return {
@@ -13,14 +12,15 @@ export function meta(): HtmlMetaDescriptor {
   };
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-  let user = await authenticator.isAuthenticated(request, { failureRedirect: config['route.login'] });
-  await refresher.checkTokenExpiry(request, user);
-  return { profile: ProfileSchema.parse(user.profile) };
-};
+export async function loader({ request }: LoaderArgs) {
+  let [dbx] = await DropboxClient.fromRequest(request);
+  if (!(await dbx.isAuthenticated()) || dbx.session == null) throw redirect('/');
+
+  return { profile: dbx.session.user };
+}
 
 export default function Screen() {
-  let { profile } = useLoaderData();
+  let { profile } = useLoaderData<typeof loader>();
   return (
     <BreadcrumbProvider>
       <HeaderProvider>

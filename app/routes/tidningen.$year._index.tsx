@@ -1,11 +1,11 @@
-import type { DataFunctionArgs, MetaFunction } from '@remix-run/node';
+import type { LoaderArgs, MetaFunction } from '@remix-run/node';
 import { useCatch, useLoaderData } from '@remix-run/react';
+import type { files } from 'dropbox';
 
+import { GenericCatchBoundary } from '~/components/CatchBoundary';
 import type { PreviewGridItem } from '~/components/PreviewGrid';
 import { IssuePreviewGrid } from '~/components/PreviewGrid';
-import { GenericCatchBoundary } from '~/components/CatchBoundary';
-import { createDropboxClient } from '~/services/dropbox.server';
-import type { FolderMetadata } from '~/types/Dropbox';
+import { DropboxClient } from '~/services/dropbox.server';
 
 export const meta: MetaFunction<typeof loader> = (args) => {
   return {
@@ -13,19 +13,20 @@ export const meta: MetaFunction<typeof loader> = (args) => {
   };
 };
 
-export async function loader({ request, params }: DataFunctionArgs) {
+export async function loader({ request, params }: LoaderArgs) {
   try {
-    let client = await createDropboxClient(request);
-    let folder = await client.listFolder({ path: `/${params.year}` });
+    let [dbx] = await DropboxClient.fromRequest(request);
+
+    let { result: folder } = await dbx.listFolder({ path: `${params.year}` });
     let folders = folder.entries
-      .filter((entry): entry is FolderMetadata => entry['.tag'] === 'folder')
-      .sort((a, b) => b.path_lower.localeCompare(a.path_lower));
+      .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
+      .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0);
 
     let issues = folders.map<PreviewGridItem>((entry) => ({
       id: entry.id,
       name: entry.name,
       href: `./${entry.name}`,
-      previewPath: entry.path_lower,
+      previewPath: entry.path_lower ?? '',
     }));
 
     return { items: issues };

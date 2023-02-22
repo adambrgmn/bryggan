@@ -3,6 +3,7 @@ import process from 'node:process';
 
 import { redirect } from '@remix-run/node';
 import { createCookieSessionStorage } from '@remix-run/node';
+import type { files } from 'dropbox';
 import { Dropbox, DropboxAuth } from 'dropbox';
 import { z } from 'zod';
 
@@ -22,9 +23,10 @@ const CLIENT_SECRET = process.env.DROPBOX_CLIENT_SECRET!;
 const REDIRECT_PATH = '/auth/callback/dropbox';
 
 const DropboxSessionUserSchema = z.object({
+  id: z.string(),
   name: z.string(),
   email: z.string().email(),
-  avatar: z.string().url().optional(),
+  avatar: z.string().url().nullable(),
 });
 export const DropboxSessionSchema = z.object({
   user: DropboxSessionUserSchema,
@@ -100,9 +102,10 @@ export class DropboxClient extends Dropbox {
 
     let session = this.setSession({
       user: {
+        id: account.account_id,
         name: account.name.display_name,
         email: account.email,
-        avatar: account.profile_photo_url,
+        avatar: account.profile_photo_url ?? null,
       },
       accessToken: token.access_token,
       refreshToken: token.refresh_token,
@@ -124,6 +127,17 @@ export class DropboxClient extends Dropbox {
 
   #setPathRoot(namespace: string) {
     this.pathRoot = JSON.stringify({ '.tag': 'root', root: namespace });
+  }
+
+  async listFolder(arg: files.ListFolderArg) {
+    arg.path = join(config['app.dropbox.root'], arg.path);
+    let response = await this.filesListFolder(arg);
+
+    for (let entry of response.result.entries) {
+      entry.path_lower = entry.path_lower?.replace(config['app.dropbox.root'], '');
+    }
+
+    return response;
   }
 }
 

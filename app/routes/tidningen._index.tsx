@@ -1,33 +1,34 @@
 import type { DataFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import type { files } from 'dropbox';
 import { useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-import type { PreviewGridItem } from '~/components/PreviewGrid';
-import { IssuePreviewGrid } from '~/components/PreviewGrid';
 import { useBreadcrumbOverride } from '~/components/Breadcrumbs';
 import { useHeaderBounds } from '~/components/Header';
-import { createDropboxClient } from '~/services/dropbox.server';
-import type { FolderMetadata } from '~/types/Dropbox';
+import type { PreviewGridItem } from '~/components/PreviewGrid';
+import { IssuePreviewGrid } from '~/components/PreviewGrid';
+import { DropboxClient } from '~/services/dropbox.server';
 
 export async function loader({ request }: DataFunctionArgs) {
-  let client = await createDropboxClient(request);
-  let rootFolder = await client.listFolder({ path: '/' });
+  let [dbx] = await DropboxClient.fromRequest(request);
+
+  let { result: rootFolder } = await dbx.listFolder({ path: '/' });
   let yearFolders = rootFolder.entries
-    .filter((entry): entry is FolderMetadata => entry['.tag'] === 'folder')
-    .sort((a, b) => b.path_lower.localeCompare(a.path_lower));
+    .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
+    .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0);
 
   let years: Years[] = await Promise.all(
     yearFolders.map(async (folder) => {
-      let year = await client.listFolder({ path: folder.path_lower });
+      let { result: year } = await dbx.listFolder({ path: folder.path_lower ?? '' });
       let issues = year.entries
-        .filter((entry): entry is FolderMetadata => entry['.tag'] === 'folder')
-        .sort((a, b) => b.path_lower.localeCompare(a.path_lower))
+        .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
+        .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0)
         .map<PreviewGridItem>((entry) => ({
           id: entry.id,
           name: entry.name,
           href: `./${folder.name}/${entry.name}`,
-          previewPath: entry.path_lower,
+          previewPath: entry.path_lower ?? '',
         }));
 
       return {
