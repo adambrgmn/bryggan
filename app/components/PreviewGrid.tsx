@@ -9,6 +9,7 @@ export interface PreviewGridItem {
   name: string;
   href: string;
   previewPath: string;
+  previewUrl: string;
 }
 
 export interface PreviewGridProps {
@@ -76,7 +77,7 @@ const GridItem: React.FC<{ item: PreviewGridItem | null; tuple?: boolean }> = ({
     <li className={container}>
       {item != null ? (
         <Fragment>
-          <PageThumbnail path={item.previewPath} size="w256h256" className="mix-blend-multiply" />
+          <PageThumbnail url={item.previewUrl} className="mix-blend-multiply" />
           <Link to={item.href} className={link}>
             {item.name}
           </Link>

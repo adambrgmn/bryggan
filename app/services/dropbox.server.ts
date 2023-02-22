@@ -135,9 +135,22 @@ export class DropboxClient extends Dropbox {
 
     for (let entry of response.result.entries) {
       entry.path_lower = entry.path_lower?.replace(config['app.dropbox.root'], '');
+      entry.preview_url = this.getPreviewUrl(entry.path_lower ?? '');
     }
 
     return response;
+  }
+
+  getPreviewUrl(path: string) {
+    let [year, issue = '01', page = `${year}-${issue}-001.pdf`] = path.replace(/^\//, '').split('/');
+    let pathname = join(config['app.dropbox.root'], year, issue, page);
+
+    let url = new URL('https://content.dropboxapi.com/2/files/get_thumbnail_v2');
+    url.searchParams.set('arg', JSON.stringify({ resource: { '.tag': 'path', path: pathname } }));
+    url.searchParams.set('authorization', `Bearer ${this.auth.getAccessToken()}`);
+    if (this.pathRoot) url.searchParams.set('path_root', this.pathRoot);
+
+    return url.toString();
   }
 }
 

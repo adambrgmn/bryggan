@@ -4,25 +4,24 @@ import { config } from '~/config';
 import type { ThumbnailSize } from '~/types/Dropbox';
 
 interface PageThumbnailProps {
-  path: string;
-  size?: ThumbnailSize;
+  url: string;
   className?: string;
 }
 
-export const PageThumbnail: React.FC<PageThumbnailProps> = ({ path, className }) => {
+export const PageThumbnail: React.FC<PageThumbnailProps> = ({ url, className }) => {
   let width = widthMap['w480h320'];
   let height = Math.round(width / config['app.dropbox.aspect_ratio']);
 
   const src = (size: ThumbnailSize, skipW = false) => {
-    let url = new URL('.' + path, 'http://localhost:3000/api/preview/');
-    url.searchParams.set('size', size);
-    url.searchParams.set('format', 'png');
+    let proxy = new URL(url);
+    let arg = JSON.parse(proxy.searchParams.get('arg') ?? '{}');
+    arg.size = size;
+    arg.format = 'png';
+    proxy.searchParams.set('arg', JSON.stringify(arg));
 
-    let base = `${url.pathname}${url.search}`;
-    if (skipW) return base;
+    if (skipW) return proxy.toString();
 
-    let width = widthMap[size];
-    return `${base} ${width}w`;
+    return `${proxy.toString()} ${width}w`;
   };
 
   return (

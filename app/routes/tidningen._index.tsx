@@ -28,6 +28,7 @@ export async function loader({ request }: DataFunctionArgs) {
           id: entry.id,
           name: entry.name,
           href: `./${folder.name}/${entry.name}`,
+          previewUrl: entry.preview_url ?? '',
           previewPath: entry.path_lower ?? '',
         }));
 
