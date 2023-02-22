@@ -1,25 +1,17 @@
 import { join } from 'node:path';
 import process from 'node:process';
 
-import { redirect } from '@remix-run/node';
 import { createCookieSessionStorage } from '@remix-run/node';
 import type { files } from 'dropbox';
 import { Dropbox, DropboxAuth } from 'dropbox';
 import { z } from 'zod';
 
 import { config } from '~/config';
-import {
-  GetThumbnailArgsSchema,
-  ListFolderArgsSchema,
-  ListFolderContinueArgsSchema,
-  ListFolderResultSchema,
-} from '~/types/Dropbox';
-import type { GetThumbnailArgs, ListFolderArgs, ListFolderContinueArgs, ListFolderResult } from '~/types/Dropbox';
+import { ensure } from '~/utils/assert';
 
-import { authenticator } from './auth.server';
-
-const CLIENT_ID = process.env.DROPBOX_CLIENT_ID!;
-const CLIENT_SECRET = process.env.DROPBOX_CLIENT_SECRET!;
+const CLIENT_ID = ensure(process.env.DROPBOX_CLIENT_ID, 'DROPBOX_CLIENT_ID must be defined');
+const CLIENT_SECRET = ensure(process.env.DROPBOX_CLIENT_SECRET, 'DROPBOX_CLIENT_SECRET must be defined');
+const SESSION_SECRET = ensure(process.env.DROPBOX_SESSION_SECRET, 'DROPBOX_SESSION_SECRET must be defined');
 const REDIRECT_PATH = '/auth/callback/dropbox';
 
 const DropboxSessionUserSchema = z.object({
@@ -43,7 +35,7 @@ export let storage = createCookieSessionStorage({
     sameSite: 'lax',
     path: '/',
     httpOnly: true,
-    secrets: ['s3cr3t'],
+    secrets: [SESSION_SECRET],
     secure: process.env.NODE_ENV === 'production',
   },
 });
@@ -162,99 +154,5 @@ export class DropboxClient extends Dropbox {
     if (this.pathRoot) url.searchParams.set('path_root', this.pathRoot);
 
     return url.toString();
-  }
-}
-
-export async function createDropboxClient(request: Request) {
-  let user = await authenticator.isAuthenticated(request);
-  return new LegacyDropboxClient(user?.accessToken);
-}
-
-export class LegacyDropboxClient {
-  #accessToken: string | undefined;
-
-  constructor(accessToken?: string) {
-    this.#accessToken = accessToken;
-  }
-
-  async #rpc(path: string, body: Record<string, unknown>, headersInit: Record<string, string> = {}): Promise<unknown> {
-    if (this.#accessToken == null) {
-      throw redirect(config['route.logout']);
-    }
-
-    let url = new URL(path, 'https://api.dropboxapi.com/2/');
-
-    let headers = new Headers({
-      Authorization: `Bearer ${this.#accessToken}`,
-      'Content-Type': 'application/json; charset=utf-8',
-      ...headersInit,
-    });
-
-    let response = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    });
-
-    if (response.ok && response.status === 200) return response.json();
-    if (response.status === 401) throw redirect(config['route.logout']);
-
-    if (process.env.NODE_ENV === 'development') {
-      let text = await response.text();
-      console.error(text);
-    }
-
-    throw new Error(`${response.status} ${response.statusText}`);
-  }
-
-  #content(path: string, body: Record<string, unknown>, headersInit: Record<string, string> = {}): Promise<Response> {
-    if (this.#accessToken == null) {
-      throw new Response('', { status: 401 });
-    }
-
-    let url = new URL(path, 'https://content.dropboxapi.com/2/');
-
-    let headers = new Headers({
-      Authorization: `Bearer ${this.#accessToken}`,
-      'Dropbox-API-Arg': JSON.stringify(body),
-      ...headersInit,
-    });
-
-    return fetch(url, { method: 'GET', headers });
-  }
-
-  async listFolder(args: ListFolderArgs): Promise<ListFolderResult> {
-    let { path, recursive = false, limit = 200 } = ListFolderArgsSchema.parse(args);
-
-    let result = await this.#rpc('files/list_folder', {
-      path: this.#prependRoot(path),
-      recursive,
-      limit,
-    });
-
-    return ListFolderResultSchema.parse(result);
-  }
-
-  async listFolderContinue(args: ListFolderContinueArgs): Promise<ListFolderResult> {
-    let { cursor } = ListFolderContinueArgsSchema.parse(args);
-    let options = { method: 'POST', body: JSON.stringify({ cursor }) };
-
-    let result = await this.#rpc('files/list_folder/continue', options);
-    return ListFolderResultSchema.parse(result);
-  }
-
-  getThumbnail(path: string, args: GetThumbnailArgs): Promise<Response> {
-    args = GetThumbnailArgsSchema.parse(args);
-    let resource = { '.tag': 'path', path: this.#prependRoot(path) };
-    return this.#content('files/get_thumbnail_v2', { resource, ...args });
-  }
-
-  download(path: string): Promise<Response> {
-    path = this.#prependRoot(path);
-    return this.#content('files/download', { path });
-  }
-
-  #prependRoot(path: string) {
-    return join(config['app.dropbox.root'], path);
   }
 }

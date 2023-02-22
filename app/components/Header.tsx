@@ -6,7 +6,6 @@ import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
 
 import { config } from '~/config';
-import type { Profile } from '~/types/User';
 
 import { Breadcrumbs } from './Breadcrumbs';
 
@@ -34,14 +33,17 @@ export function useHeaderBounds() {
 }
 
 interface HeaderProps {
-  profile: Profile;
+  profile: {
+    avatar?: string | null;
+    name: string;
+  };
 }
 
 export const Header: React.FC<HeaderProps> = ({ profile }) => {
   let { ref } = useHeaderContext();
   return (
-    <header ref={ref} className="flex justify-between px-6 py-2 sticky top-0 z-10 border-b bg-white">
-      <div className="flex gap-1 items-center text-sm">
+    <header ref={ref} className="sticky top-0 z-10 flex justify-between border-b bg-white px-6 py-2">
+      <div className="flex items-center gap-1 text-sm">
         <h1 className="font-semibold">
           <Link to=".">Bryggan</Link>
         </h1>
@@ -51,17 +53,19 @@ export const Header: React.FC<HeaderProps> = ({ profile }) => {
       <div className="flex items-center">
         <Menu.Menu>
           <Menu.MenuButton className="rounded-full border p-0.5" aria-label="User actions">
-            <img src={profile.avatar ?? ''} className="h-6 w-6 rounded-full" alt="" aria-hidden />
+            {profile.avatar != null ? (
+              <img src={profile.avatar ?? ''} className="h-6 w-6 rounded-full" alt="" aria-hidden />
+            ) : null}
           </Menu.MenuButton>
-          <Menu.MenuPopover className="z-10 mt-1 bg-white border rounded shadow w-40">
-            <div className="py-2 border-b">
-              <p className="text-xs px-2">
+          <Menu.MenuPopover className="z-10 mt-1 w-40 rounded border bg-white shadow">
+            <div className="border-b py-2">
+              <p className="px-2 text-xs">
                 Signed in as <br />
                 <strong className="font-medium">{profile.name}</strong>
               </p>
             </div>
 
-            <Menu.MenuItems className="flex flex-col text-xs p-0 py-2 border-0 bg-transparent">
+            <Menu.MenuItems className="flex flex-col border-0 bg-transparent p-0 py-2 text-xs">
               <MenuLink to="settings">Settings</MenuLink>
               <MenuLink to={config['route.logout']} destructive>
                 Sign out
