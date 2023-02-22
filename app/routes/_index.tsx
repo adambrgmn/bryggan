@@ -1,22 +1,21 @@
-import type { LoaderFunction } from '@remix-run/node';
+import type { LoaderArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 
 import { SignIn } from '~/components/Auth';
-import { config } from '~/config';
-import { authenticator } from '~/services/auth.server';
+import { DropboxClient } from '~/services/dropbox.server';
 
 export default function Index() {
-  let data = useLoaderData();
+  let data = useLoaderData<typeof loader>();
 
   return (
     <div>
       <h1>Welcome to Bryggan</h1>
-      {data.profile == null ? <SignIn /> : <Link to="/tidningen">Go to app</Link>}
+      {data.user == null ? <SignIn /> : <Link to="/tidningen">Hey {data.user.name}! Go to app</Link>}
     </div>
   );
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-  let user = await authenticator.isAuthenticated(request, { failureRedirect: config['route.login'] });
-  return { profile: user?.profile };
-};
+export async function loader({ request }: LoaderArgs) {
+  let [dbx] = await DropboxClient.fromRequest(request);
+  return { user: dbx.session?.user };
+}
