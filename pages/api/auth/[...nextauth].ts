@@ -1,6 +1,7 @@
 import { users } from 'dropbox';
-import NextAuth, { AuthOptions, DefaultSession, getServerSession } from 'next-auth';
+import NextAuth, { AuthOptions, getServerSession } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import DropboxProvider from 'next-auth/providers/dropbox';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
@@ -16,6 +17,7 @@ url.searchParams.set('token_access_type', 'offline');
 url.searchParams.set('scope', ['account_info.read', 'files.content.read'].join(' '));
 
 const dropbox = DropboxProvider({
+  id: 'dropbox',
   clientId: CLIENT_ID,
   clientSecret: CLIENT_SECRET,
   authorization: url.toString(),
@@ -39,8 +41,22 @@ const dropbox = DropboxProvider({
   },
 });
 
+const credentials = CredentialsProvider({
+  id: 'refresh_token',
+  name: 'Refresh Token',
+  credentials: {
+    refresh_token: { label: 'Token', type: 'password' },
+  },
+  async authorize(credentials, req) {
+    throw new Error('');
+  },
+});
+
 const options: AuthOptions = {
-  providers: [dropbox],
+  providers: [dropbox, credentials],
+  pages: {
+    signIn: config['route.signin'],
+  },
   callbacks: {
     async jwt({ token, account, user }) {
       if (account != null && user != null) {

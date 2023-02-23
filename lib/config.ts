@@ -5,6 +5,6 @@ export const config = {
   'app.dropbox.aspect_ratio': 960 / 1235,
 
   'route.app': '/tidningen',
-  'route.signin': '/api/auth/signin/dropbox',
+  'route.signin': '/sign-in',
   'route.signout': '/api/auth/signout',
 };
