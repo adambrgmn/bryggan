@@ -37,13 +37,18 @@ export function useHeaderBounds() {
 
 interface HeaderProps {
   profile: {
-    avatar?: string | null;
     name: string;
+    email: string;
+    image?: string | null | undefined;
   };
+  hashedEmail: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({ profile }) => {
+export const Header: React.FC<HeaderProps> = ({ profile, hashedEmail }) => {
   let { ref } = useHeaderContext();
+  let avatarFallback = new URL(hashedEmail, 'https://www.gravatar.com/avatar/');
+  avatarFallback.searchParams.set('s', '24');
+
   return (
     <header ref={ref} className="sticky top-0 z-10 flex justify-between border-b bg-white px-6 py-2">
       <div className="flex items-center gap-1 text-sm">
@@ -56,9 +61,14 @@ export const Header: React.FC<HeaderProps> = ({ profile }) => {
       <div className="flex items-center">
         <Menu.Menu>
           <Menu.MenuButton className="rounded-full border p-0.5" aria-label="User actions">
-            {profile.avatar != null ? (
-              <Image src={profile.avatar} alt="" className="h-6 w-6 rounded-full" aria-hidden />
-            ) : null}
+            <Image
+              src={profile.image ?? avatarFallback.toString()}
+              alt=""
+              className="h-6 w-6 rounded-full"
+              aria-hidden
+              width={24}
+              height={24}
+            />
           </Menu.MenuButton>
           <Menu.MenuPopover className="z-10 mt-1 w-40 rounded border bg-white shadow">
             <div className="border-b py-2">
@@ -69,8 +79,8 @@ export const Header: React.FC<HeaderProps> = ({ profile }) => {
             </div>
 
             <Menu.MenuItems className="flex flex-col border-0 bg-transparent p-0 py-2 text-xs">
-              <MenuLink to="settings">Settings</MenuLink>
-              <MenuLink to={config['route.signout']} destructive>
+              <MenuLink href="/tidningen/settings">Settings</MenuLink>
+              <MenuLink href={config['route.signout']} destructive>
                 Sign out
               </MenuLink>
             </Menu.MenuItems>
@@ -81,8 +91,8 @@ export const Header: React.FC<HeaderProps> = ({ profile }) => {
   );
 };
 
-const MenuLink: React.FC<{ to: string; destructive?: boolean; children: React.ReactNode }> = ({
-  to,
+const MenuLink: React.FC<{ href: string; destructive?: boolean; children: React.ReactNode }> = ({
+  href,
   destructive,
   children,
 }) => {
@@ -93,7 +103,7 @@ const MenuLink: React.FC<{ to: string; destructive?: boolean; children: React.Re
   });
 
   return (
-    <Menu.MenuLink as={Link} href={to} className={className}>
+    <Menu.MenuLink as={Link} href={href} className={className}>
       {children}
     </Menu.MenuLink>
   );

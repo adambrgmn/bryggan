@@ -1,5 +1,5 @@
 import { users } from 'dropbox';
-import NextAuth, { AuthOptions, getServerSession } from 'next-auth';
+import NextAuth, { AuthOptions, DefaultSession, getServerSession } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import DropboxProvider from 'next-auth/providers/dropbox';
 import { redirect } from 'next/navigation';
@@ -121,6 +121,8 @@ declare module 'next-auth' {
   }
 
   interface User {
+    name: string;
+    email: string;
     pathRoot: string;
   }
 
@@ -130,6 +132,7 @@ declare module 'next-auth' {
     expiresAt: number;
     pathRoot: string;
     error?: 'RefreshAccessTokenError';
+    user: User;
   }
 }
 

@@ -10,8 +10,12 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'content.dropboxapi.com',
-        port: '',
         pathname: '/2/files/get_thumbnail_v2',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.gravatar.com',
+        pathname: '/avatar/*',
       },
     ],
   },
