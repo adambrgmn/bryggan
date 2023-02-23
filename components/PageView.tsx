@@ -4,7 +4,7 @@ import { DialogContent, DialogOverlay } from '@reach/dialog';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cloneElement, startTransition, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Loader, X, ZoomIn, ZoomOut } from 'react-feather';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -26,6 +26,7 @@ interface PageViewProps {
 
 export const PageView: React.FC<PageViewProps> = ({ url, next, previous, current, total }) => {
   let router = useRouter();
+  let pathname = usePathname();
   let [scale, setScale] = useState(1);
 
   let initialFocusRef = useRef<HTMLButtonElement>(null);
@@ -41,8 +42,13 @@ export const PageView: React.FC<PageViewProps> = ({ url, next, previous, current
     });
   };
 
+  function exit() {
+    let nextPathname = pathname?.split('/').slice(0, -1).join('/');
+    if (nextPathname != null) router.replace(nextPathname);
+  }
+
   return (
-    <DialogOverlay isOpen onDismiss={() => router.back()} className="z-20" initialFocusRef={initialFocusRef}>
+    <DialogOverlay isOpen onDismiss={exit} className="z-20" initialFocusRef={initialFocusRef}>
       <DialogContent
         ref={wrapperRef}
         className="relative m-4 flex h-[calc(100vh-2rem)] w-auto flex-col items-center overflow-hidden rounded p-4"
@@ -56,6 +62,7 @@ export const PageView: React.FC<PageViewProps> = ({ url, next, previous, current
           next={next}
           previous={previous}
           current={current}
+          exit={exit}
           total={total}
           scale={scale}
           setScale={handleZoom}
@@ -98,20 +105,32 @@ interface ControlsProps extends Omit<PageViewProps, 'url'> {
   scale: number;
   setScale: (amount: number | 'reset') => void;
   initialFocusRef: React.RefObject<HTMLButtonElement>;
+  exit: () => void;
 }
 
-const Controls: React.FC<ControlsProps> = ({ next, previous, current, total, scale, setScale, initialFocusRef }) => {
+const Controls: React.FC<ControlsProps> = ({
+  next,
+  previous,
+  current,
+  exit,
+  total,
+  scale,
+  setScale,
+  initialFocusRef,
+}) => {
   let router = useRouter();
+  let pathname = usePathname();
+  let basePathname = pathname?.split('/').slice(0, -1).join('/') ?? '';
 
   useWindowEvent('keydown', (event) => {
     switch (event.key) {
       case 'ArrowLeft':
         event.preventDefault();
-        if (previous != null) router.push(`../${previous}`);
+        if (previous != null) router.push(`${basePathname}/${previous}`);
         break;
       case 'ArrowRight':
         event.preventDefault();
-        if (next != null) router.push(`../${next}`);
+        if (next != null) router.push(`${basePathname}/${next}`);
         break;
 
       case '+':
@@ -133,11 +152,15 @@ const Controls: React.FC<ControlsProps> = ({ next, previous, current, total, sca
 
   return (
     <div className="fixed bottom-10 mx-auto flex w-auto flex-none items-center gap-2 rounded-2xl border bg-white">
-      <PaginationLink to={previous ? `../${previous}` : undefined} label="Previous" icon={<ChevronLeft />} />
+      <PaginationLink
+        to={previous ? `${basePathname}/${previous}` : undefined}
+        label="Previous"
+        icon={<ChevronLeft />}
+      />
       <span className="text-xs tabular-nums">
         {current} / {total}
       </span>
-      <PaginationLink to={next ? `../${next}` : undefined} label="Next" icon={<ChevronRight />} />
+      <PaginationLink to={next ? `${basePathname}/${next}` : undefined} label="Next" icon={<ChevronRight />} />
 
       <ControlsDivider />
       <button
@@ -145,7 +168,7 @@ const Controls: React.FC<ControlsProps> = ({ next, previous, current, total, sca
         type="button"
         aria-label="Close preview"
         className={sharedButtonClassName()}
-        onClick={() => router.back()}
+        onClick={exit}
       >
         <X size={14} />
       </button>
