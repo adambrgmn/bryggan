@@ -5,18 +5,13 @@
   "sideEffects": false,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "build:react-pdf": "sh ./scripts/build-react-pdf-worker.sh",
     "start": "next start",
+    "build": "npm run build:react-pdf && npm run build:app",
+    "build:app": "next build",
+    "build:react-pdf": "sh ./scripts/build-react-pdf-worker.sh",
     "lint": "next lint",
-    "format": "prettier app --write",
-    "postinstall": "patch-package",
-    "_build": "npm run build:react-pdf && npm run build:app",
-    "_build:app": "remix build",
-    "_dev": "remix dev",
-    "_predev": "npm run build:react-pdf",
-    "_start": "remix-serve build",
-    "_lint": "eslint app --ext .js,.ts,.tsx"
+    "format": "prettier app components lib pages --write",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@next/font": "13.1.6",
@@ -37,7 +32,6 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "4.0.0",
-    "@types/debug": "4.1.7",
     "@types/node": "18.14.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
@@ -53,6 +47,6 @@
     "typescript": "4.9.5"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   }
 }
