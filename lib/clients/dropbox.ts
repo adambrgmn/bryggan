@@ -1,7 +1,7 @@
-import type { files } from 'dropbox';
+import { DropboxResponseError, files } from 'dropbox';
 import { Dropbox, DropboxAuth } from 'dropbox';
 import { Session } from 'next-auth';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { cache } from 'react';
 import { z } from 'zod';
 
@@ -67,6 +67,7 @@ export class DropboxClient extends Dropbox {
 
       return folders;
     } catch (error) {
+      if (error instanceof DropboxResponseError && error.status === 401) redirect(config['route.logout']);
       notFound();
     }
   });
@@ -80,6 +81,7 @@ export class DropboxClient extends Dropbox {
 
       return folders;
     } catch (error) {
+      if (error instanceof DropboxResponseError && error.status === 401) redirect(config['route.logout']);
       notFound();
     }
   });
