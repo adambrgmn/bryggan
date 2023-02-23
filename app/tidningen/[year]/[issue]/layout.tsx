@@ -1,5 +1,6 @@
 import { PagePreviewGrid, PreviewGridItem } from '@/components/PreviewGrid';
 import { DropboxClient } from '@/lib/clients/dropbox';
+import { config } from '@/lib/config';
 import { formatPageName, parsePageName } from '@/lib/utils/dropbox';
 import { join } from '@/lib/utils/path';
 import { getAuthorizedSession } from '@/pages/api/auth/[...nextauth]';
@@ -17,7 +18,7 @@ export default async function Issue({ params, children }: React.PropsWithChildre
     return {
       id: entry.id,
       name,
-      href: join('/tidningen', params.year, params.issue, formatPageName(Number(name))),
+      href: join(config['route.app'], params.year, params.issue, formatPageName(Number(name))),
       previewUrl: entry.preview_url ?? '',
       previewPath: entry.path_lower ?? '',
     };

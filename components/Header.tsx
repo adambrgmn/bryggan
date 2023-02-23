@@ -48,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({ profile }) => {
     <header ref={ref} className="sticky top-0 z-10 flex justify-between border-b bg-white px-6 py-2">
       <div className="flex items-center gap-1 text-sm">
         <h1 className="font-semibold">
-          <Link href="/tidningen">Bryggan</Link>
+          <Link href={config['route.app']}>Bryggan</Link>
         </h1>
         <Breadcrumbs />
       </div>
@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({ profile }) => {
 
             <Menu.MenuItems className="flex flex-col border-0 bg-transparent p-0 py-2 text-xs">
               <MenuLink to="settings">Settings</MenuLink>
-              <MenuLink to={config['route.logout']} destructive>
+              <MenuLink to={config['route.signout']} destructive>
                 Sign out
               </MenuLink>
             </Menu.MenuItems>

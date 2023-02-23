@@ -7,6 +7,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { ChevronRight } from 'react-feather';
 import useMeasure from 'react-use-measure';
 
+import { config } from '@/lib/config';
 import { compact } from '@/lib/utils/array';
 import { parsePageName } from '@/lib/utils/dropbox';
 import { join } from '@/lib/utils/path';
@@ -48,9 +49,9 @@ export const Breadcrumbs: React.FC = () => {
   let items: BreadcrumbItem[] = ctx?.breadcrumb
     ? [ctx.breadcrumb]
     : compact([
-        year != null ? { label: year, to: join('/tidningen', year) } : null,
-        issue != null ? { label: issue, to: join('/tidningen', year, issue) } : null,
-        page != null ? { label: parsePageName(page), to: join('/tidningen', year, issue, page) } : null,
+        year != null ? { label: year, to: join(config['route.app'], year) } : null,
+        issue != null ? { label: issue, to: join(config['route.app'], year, issue) } : null,
+        page != null ? { label: parsePageName(page), to: join(config['route.app'], year, issue, page) } : null,
       ]);
 
   return (
