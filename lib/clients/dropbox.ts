@@ -1,12 +1,12 @@
 import { join } from 'node:path';
 import process from 'node:process';
 
-import { createCookieSessionStorage } from '@remix-run/node';
-import { config } from '_app/config';
-import { ensure } from '_app/utils/assert';
 import type { files } from 'dropbox';
 import { Dropbox, DropboxAuth } from 'dropbox';
 import { z } from 'zod';
+
+import { config } from '@/lib/config';
+import { ensure } from '@/lib/utils/assert';
 
 const CLIENT_ID = ensure(process.env.DROPBOX_CLIENT_ID, 'DROPBOX_CLIENT_ID must be defined');
 const CLIENT_SECRET = ensure(process.env.DROPBOX_CLIENT_SECRET, 'DROPBOX_CLIENT_SECRET must be defined');
@@ -28,16 +28,21 @@ export const DropboxSessionSchema = z.object({
 });
 export type DropboxSession = z.infer<typeof DropboxSessionSchema>;
 
-export let storage = createCookieSessionStorage({
-  cookie: {
-    name: 'bryggan_dropbox',
-    sameSite: 'lax',
-    path: '/',
-    httpOnly: true,
-    secrets: [SESSION_SECRET],
-    secure: process.env.NODE_ENV === 'production',
+// export let storage = createCookieSessionStorage({
+//   cookie: {
+//     name: 'bryggan_dropbox',
+//     sameSite: 'lax',
+//     path: '/',
+//     httpOnly: true,
+//     secrets: [SESSION_SECRET],
+//     secure: process.env.NODE_ENV === 'production',
+//   },
+// });
+const storage = {
+  async getSession(cookies: string | null | undefined) {
+    return new Map<string, any>();
   },
-});
+};
 
 export type DopboxClientOptions = { clientId: string; clientSecret: string; redirectUri: string };
 

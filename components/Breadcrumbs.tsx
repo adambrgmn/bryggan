@@ -1,12 +1,15 @@
-import { Link } from '@remix-run/react';
-import { useSafeParams } from '_app/hooks/use-safe-params';
-import { compact } from '_app/utils/array';
-import { parsePageName } from '_app/utils/dropbox';
+'use client';
+
 import { AnimatePresence, motion, useIsPresent } from 'framer-motion';
+import Link from 'next/link';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ChevronRight } from 'react-feather';
 import useMeasure from 'react-use-measure';
 import * as z from 'zod';
+
+// import { useSafeParams } from '@/lib/hooks/use-safe-params';
+import { compact } from '@/lib/utils/array';
+import { parsePageName } from '@/lib/utils/dropbox';
 
 interface BreadcrumbItem {
   label: string;
@@ -47,7 +50,7 @@ let ParamsSchema = z.object({
 export const Breadcrumbs: React.FC = () => {
   const ctx = useContext(BreadcrumbsContext);
 
-  let params = useSafeParams(ParamsSchema);
+  let params = { year: '2023', issue: undefined, page: undefined }; // useSafeParams(ParamsSchema);
   let items: BreadcrumbItem[] = ctx?.breadcrumb
     ? [ctx.breadcrumb]
     : compact([
@@ -83,7 +86,7 @@ const Breadcrumb: React.FC<{ label: string; to: string }> = ({ label, to }) => {
       className="flex items-center gap-1 text-gray-600"
     >
       <ChevronRight size={16} className="text-gray-300" />
-      <Link to={to} className="hover:text-blue-500 focus:text-blue-500">
+      <Link href={to} className="hover:text-blue-500 focus:text-blue-500">
         {label}
       </Link>
     </motion.li>

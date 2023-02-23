@@ -1,18 +1,17 @@
-import { Form } from '@remix-run/react';
-import { config } from '_app/config';
+import { config } from '@/lib/config';
 
 export const SignIn: React.FC = () => {
   return (
-    <Form method="post" action={config['route.login']}>
+    <form method="post" action={config['route.login']}>
       <button type="submit">Sign in</button>
-    </Form>
+    </form>
   );
 };
 
 export const SignOut: React.FC = () => {
   return (
-    <Form method="post" action={config['route.logout']}>
+    <form method="post" action={config['route.logout']}>
       <button type="submit">Sign out</button>
-    </Form>
+    </form>
   );
 };

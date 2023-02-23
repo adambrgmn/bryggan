@@ -1,14 +1,16 @@
 import { DialogContent, DialogOverlay } from '@reach/dialog';
-import { Link, useNavigate } from '@remix-run/react';
-import { config } from '_app/config';
-import { useWindowEvent } from '_app/hooks/use-window-event';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { cloneElement, startTransition, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Loader, X, ZoomIn, ZoomOut } from 'react-feather';
 import { Document, Page, pdfjs } from 'react-pdf';
 import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
+
+import { config } from '@/lib/config';
+import { useWindowEvent } from '@/lib/hooks/use-window-event';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.js';
 
@@ -21,7 +23,7 @@ interface PageViewProps {
 }
 
 export const PageView: React.FC<PageViewProps> = ({ url, next, previous, current, total }) => {
-  let navigate = useNavigate();
+  let router = useRouter();
   let [scale, setScale] = useState(1);
 
   let initialFocusRef = useRef<HTMLButtonElement>(null);
@@ -38,7 +40,7 @@ export const PageView: React.FC<PageViewProps> = ({ url, next, previous, current
   };
 
   return (
-    <DialogOverlay isOpen onDismiss={() => navigate('..')} className="z-20" initialFocusRef={initialFocusRef}>
+    <DialogOverlay isOpen onDismiss={() => router.back()} className="z-20" initialFocusRef={initialFocusRef}>
       <DialogContent
         ref={wrapperRef}
         className="relative m-4 flex h-[calc(100vh-2rem)] w-auto flex-col items-center overflow-hidden rounded p-4"
@@ -97,17 +99,17 @@ interface ControlsProps extends Omit<PageViewProps, 'url'> {
 }
 
 const Controls: React.FC<ControlsProps> = ({ next, previous, current, total, scale, setScale, initialFocusRef }) => {
-  let navigate = useNavigate();
+  let router = useRouter();
 
   useWindowEvent('keydown', (event) => {
     switch (event.key) {
       case 'ArrowLeft':
         event.preventDefault();
-        if (previous != null) navigate(`../${previous}`);
+        if (previous != null) router.push(`../${previous}`);
         break;
       case 'ArrowRight':
         event.preventDefault();
-        if (next != null) navigate(`../${next}`);
+        if (next != null) router.push(`../${next}`);
         break;
 
       case '+':
@@ -141,7 +143,7 @@ const Controls: React.FC<ControlsProps> = ({ next, previous, current, total, sca
         type="button"
         aria-label="Close preview"
         className={sharedButtonClassName()}
-        onClick={() => navigate('..')}
+        onClick={() => router.back()}
       >
         <X size={14} />
       </button>
@@ -170,7 +172,7 @@ const PaginationLink: React.FC<{
   let iconClone = cloneElement(icon, { size: 14 });
 
   return to ? (
-    <Link to={to} aria-label={label} className={sharedButtonClassName()}>
+    <Link href={to} aria-label={label} className={sharedButtonClassName()}>
       {iconClone}
     </Link>
   ) : (

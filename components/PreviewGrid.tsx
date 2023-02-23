@@ -1,5 +1,5 @@
-import { Link } from '@remix-run/react';
 import classNames from 'classnames';
+import Link from 'next/link';
 import { Fragment } from 'react';
 
 import { PageThumbnail } from './PageThumbnail';
@@ -78,7 +78,7 @@ const GridItem: React.FC<{ item: PreviewGridItem | null; tuple?: boolean }> = ({
       {item != null ? (
         <Fragment>
           <PageThumbnail url={item.previewUrl} className="mix-blend-multiply" />
-          <Link to={item.href} className={link}>
+          <Link href={item.href} className={link}>
             {item.name}
           </Link>
         </Fragment>

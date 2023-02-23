@@ -1,12 +1,15 @@
+'use client';
+
 import * as Menu from '@reach/menu-button';
-import { Link } from '@remix-run/react';
-import { config } from '_app/config';
 import classNames from 'classnames';
+import Link from 'next/link';
 import { createContext, useContext } from 'react';
 import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
 
-import { Breadcrumbs } from './Breadcrumbs';
+import { config } from '@/lib/config';
+
+// import { Breadcrumbs } from './Breadcrumbs';
 
 interface HeaderContextType {
   ref: (element: HTMLElement | SVGElement | null) => void;
@@ -44,9 +47,9 @@ export const Header: React.FC<HeaderProps> = ({ profile }) => {
     <header ref={ref} className="sticky top-0 z-10 flex justify-between border-b bg-white px-6 py-2">
       <div className="flex items-center gap-1 text-sm">
         <h1 className="font-semibold">
-          <Link to=".">Bryggan</Link>
+          <Link href=".">Bryggan</Link>
         </h1>
-        <Breadcrumbs />
+        {/* <Breadcrumbs /> */}
       </div>
 
       <div className="flex items-center">
@@ -89,7 +92,7 @@ const MenuLink: React.FC<{ to: string; destructive?: boolean; children: React.Re
   });
 
   return (
-    <Menu.MenuLink as={Link} to={to} className={className}>
+    <Menu.MenuLink as={Link} href={to} className={className}>
       {children}
     </Menu.MenuLink>
   );

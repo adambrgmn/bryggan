@@ -1,8 +1,7 @@
-import type { ThrownResponse } from '@remix-run/react';
 import { Meh } from 'react-feather';
 
 export type CatchBoundaryProps = {
-  caught: ThrownResponse<number, unknown>;
+  caught: any;
 };
 
 export function GenericCatchBoundary({ caught }: CatchBoundaryProps) {

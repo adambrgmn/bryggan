@@ -1,6 +1,7 @@
-import { config } from '_app/config';
-import type { ThumbnailSize } from '_app/types/Dropbox';
 import classNames from 'classnames';
+
+import { config } from '@/lib/config';
+import type { ThumbnailSize } from '@/lib/types/Dropbox';
 
 interface PageThumbnailProps {
   url: string;
