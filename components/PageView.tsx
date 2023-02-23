@@ -1,8 +1,10 @@
+'use client';
+
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { cloneElement, startTransition, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Loader, X, ZoomIn, ZoomOut } from 'react-feather';
 import { Document, Page, pdfjs } from 'react-pdf';

@@ -1,6 +1,4 @@
 import { Inter } from '@next/font/google';
-import '@reach/dialog/styles.css';
-import '@reach/menu-button/styles.css';
 
 import './globals.css';
 

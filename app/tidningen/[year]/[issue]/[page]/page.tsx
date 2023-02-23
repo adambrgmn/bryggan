@@ -1,11 +1,13 @@
+import { Suspense, lazy } from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import * as z from 'zod';
 
-import { PageView } from '@/components/PageView';
+// import { PageView } from '@/components/PageView';
 import { DropboxClient } from '@/lib/clients/dropbox';
 import { config } from '@/lib/config';
 import { formatPageName } from '@/lib/utils/dropbox';
+import { getAuthorizedSession } from '@/pages/api/auth/[...nextauth]';
 
 let PageParamsSchema = z.object({
   year: z.string(),
@@ -13,43 +15,35 @@ let PageParamsSchema = z.object({
   page: z.coerce.number(),
 });
 
-let OutletContextSchema = z.object({ total: z.number().min(1) });
+type Params = { year: string; issue: string; page: string };
+type Props = { params: Params };
 
-// export const meta: MetaFunction<typeof loader> = (args) => {
-//   return { title: `${args.params['year']}-${args.params['issue']}-${args.params['page']} | Bryggan` };
-// };
+const PageView = lazy(() => import('@/components/PageView').then(({ PageView }) => ({ default: PageView })));
 
-// export async function loader(ctx: LoaderArgs) {
-//   try {
-//     let [dbx] = await DropboxClient.fromRequest(ctx.request);
+export default async function Page(props: Props) {
+  let session = await getAuthorizedSession();
+  let dbx = DropboxClient.fromSession(session);
 
-//     let params = PageParamsSchema.parse(ctx.params);
-//     let url = dbx.getDownloadUrl(buildFilePath(params));
+  let params = PageParamsSchema.parse(props.params);
+  let url = dbx.getDownloadUrl(buildFilePath(params));
+  let total = 24;
 
-//     return { url, ...params };
-//   } catch {
-//     throw redirect('..');
-//   }
-// }
+  let current = params.page;
+  let next: string | undefined = undefined;
+  let previous: string | undefined = undefined;
 
-export default function Page() {
-  // let { url, ...params } = useLoaderData<typeof loader>();
+  if (current < total) next = formatPageName(current + 1);
+  if (current > 1) previous = formatPageName(current - 1);
 
-  // let context = OutletContextSchema.parse(useOutletContext());
-
-  // let current = params.page;
-  // let next: string | undefined = undefined;
-  // let previous: string | undefined = undefined;
-
-  // if (current < context.total) next = formatPageName(current + 1);
-  // if (current > 1) previous = formatPageName(current - 1);
-
-  // return <PageView url={url} next={next} previous={previous} total={context.total} current={current} />;
-  return null;
+  return (
+    <Suspense fallback={<p>...</p>}>
+      <PageView url={url} next={next} previous={previous} total={total} current={current} />
+    </Suspense>
+  );
 }
 
-// function buildFilePath(params: z.infer<typeof PageParamsSchema>) {
-//   return `${config['app.dropbox.root']}/${params.year}/${params.issue}/${params.year}-${params.issue}-${formatPageName(
-//     params.page,
-//   )}.pdf`;
-// }
+function buildFilePath(params: z.infer<typeof PageParamsSchema>) {
+  return `${config['app.dropbox.root']}/${params.year}/${params.issue}/${params.year}-${params.issue}-${formatPageName(
+    params.page,
+  )}.pdf`;
+}
