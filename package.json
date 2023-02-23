@@ -14,7 +14,6 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@next/font": "13.2.0",
     "@reach/dialog": "0.18.0",
     "@reach/menu-button": "0.18.0",
     "classnames": "2.3.2",
