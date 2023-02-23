@@ -67,7 +67,7 @@ export class DropboxClient extends Dropbox {
 
       return folders;
     } catch (error) {
-      if (error instanceof DropboxResponseError && error.status === 401) redirect(config['route.logout']);
+      if (error instanceof DropboxResponseError && error.status === 401) redirect(config['route.signout']);
       notFound();
     }
   });
@@ -81,7 +81,7 @@ export class DropboxClient extends Dropbox {
 
       return folders;
     } catch (error) {
-      if (error instanceof DropboxResponseError && error.status === 401) redirect(config['route.logout']);
+      if (error instanceof DropboxResponseError && error.status === 401) redirect(config['route.signout']);
       notFound();
     }
   });
