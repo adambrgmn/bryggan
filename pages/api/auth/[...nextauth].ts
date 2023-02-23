@@ -71,7 +71,7 @@ export function getSession() {
 }
 export async function getAuthorizedSession() {
   let session = await getSession();
-  if (session == null) redirect(config['route.login']);
+  if (session == null) redirect(config['route.signin']);
   return session;
 }
 
