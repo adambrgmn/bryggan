@@ -1,35 +1,28 @@
-import { IssuePreviewGrid } from '@/components/PreviewGrid';
+import { files } from 'dropbox';
 
-// export const meta: MetaFunction<typeof loader> = (args) => {
-//   return {
-//     title: `${args.params['year']} | Bryggan`,
-//   };
-// };
+import { IssuePreviewGrid, PreviewGridItem } from '@/components/PreviewGrid';
+import { DropboxClient } from '@/lib/clients/dropbox';
+import { getAuthorizedSession } from '@/pages/api/auth/[...nextauth]';
 
-// export async function loader({ request, params }: LoaderArgs) {
-//   try {
-//     let [dbx] = await DropboxClient.fromRequest(request);
+type Params = { year: string };
+type Props = { params: Params };
 
-//     let { result: folder } = await dbx.listFolder({ path: `${params.year}` });
-//     let folders = folder.entries
-//       .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
-//       .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0);
+export default async function Page({ params }: Props) {
+  let session = await getAuthorizedSession();
+  let dbx = DropboxClient.fromSession(session);
 
-//     let issues = folders.map<PreviewGridItem>((entry) => ({
-//       id: entry.id,
-//       name: entry.name,
-//       href: `./${entry.name}`,
-//       previewUrl: entry.preview_url ?? '',
-//       previewPath: entry.path_lower ?? '',
-//     }));
+  let { result: folder } = await dbx.listFolder({ path: `${params.year}` });
+  let folders = folder.entries
+    .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
+    .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0);
 
-//     return { items: issues };
-//   } catch {
-//     throw new Response('Not found', { status: 404 });
-//   }
-// }
+  let issues = folders.map<PreviewGridItem>((entry) => ({
+    id: entry.id,
+    name: entry.name,
+    href: `/tidningen/${params.year}/${entry.name}`,
+    previewUrl: entry.preview_url ?? '',
+    previewPath: entry.path_lower ?? '',
+  }));
 
-export default function Page() {
-  let data = { items: [] as any };
-  return <IssuePreviewGrid items={data.items} />;
+  return <IssuePreviewGrid items={issues} />;
 }

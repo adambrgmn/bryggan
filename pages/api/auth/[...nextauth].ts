@@ -1,8 +1,11 @@
-import NextAuth, { AuthOptions, getServerSession as _getServerSession } from 'next-auth';
+import { users } from 'dropbox';
+import NextAuth, { AuthOptions, getServerSession } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import DropboxProvider from 'next-auth/providers/dropbox';
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { config } from '@/lib/config';
 import { ensure } from '@/lib/utils/assert';
 
 const CLIENT_ID = ensure(process.env.DROPBOX_CLIENT_ID, 'DROPBOX_CLIENT_ID must be defined');
@@ -25,16 +28,26 @@ const dropbox = DropboxProvider({
       return res.json();
     },
   },
+  profile(account: users.FullAccount) {
+    return {
+      id: account.account_id,
+      email: account.email,
+      name: account.name.display_name,
+      image: account.profile_photo_url,
+      pathRoot: account.root_info.root_namespace_id,
+    };
+  },
 });
 
 const options: AuthOptions = {
   providers: [dropbox],
   callbacks: {
-    async jwt({ token, account }) {
-      if (account != null) {
+    async jwt({ token, account, user }) {
+      if (account != null && user != null) {
         token.accessToken = ensure(account.access_token, 'No access token received from auth endpoint');
         token.refreshToken = ensure(account.refresh_token, 'No refresh token received from auth endpoint');
         token.expiresAt = ensure(account.expires_at, 'No expiry received from auth endpoint') + Date.now();
+        token.pathRoot = ensure(user.pathRoot, 'No path root received from user info');
       }
 
       if (Date.now() < token.expiresAt) return token;
@@ -44,6 +57,7 @@ const options: AuthOptions = {
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
       session.expiresAt = token.expiresAt;
+      session.pathRoot = token.pathRoot;
       session.error = token.error;
 
       return session;
@@ -52,7 +66,14 @@ const options: AuthOptions = {
 };
 
 export default NextAuth(options);
-export const getServerSession = () => _getServerSession(options);
+export function getSession() {
+  return getServerSession(options);
+}
+export async function getAuthorizedSession() {
+  let session = await getSession();
+  if (session == null) redirect(config['route.login']);
+  return session;
+}
 
 const RefreshToken = z.object({
   access_token: z.string(),
@@ -89,10 +110,19 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
 }
 
 declare module 'next-auth' {
+  interface Profile {
+    pathRoot: string;
+  }
+
+  interface User {
+    pathRoot: string;
+  }
+
   interface Session {
     accessToken: string;
     refreshToken: string;
     expiresAt: number;
+    pathRoot: string;
     error?: 'RefreshAccessTokenError';
   }
 }
@@ -102,6 +132,7 @@ declare module 'next-auth/jwt' {
     accessToken: string;
     refreshToken: string;
     expiresAt: number;
+    pathRoot: string;
     error?: 'RefreshAccessTokenError';
   }
 }

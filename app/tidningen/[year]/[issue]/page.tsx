@@ -1,36 +1,32 @@
-import { PagePreviewGrid } from '@/components/PreviewGrid';
+import { files } from 'dropbox';
 
-// export const meta: MetaFunction<typeof loader> = (args) => {
-//   return {
-//     title: `${args.params['year']}-${args.params['issue']} | Bryggan`,
-//   };
-// };
+import { PagePreviewGrid, PreviewGridItem } from '@/components/PreviewGrid';
+import { DropboxClient } from '@/lib/clients/dropbox';
+import { formatPageName, parsePageName } from '@/lib/utils/dropbox';
+import { getAuthorizedSession } from '@/pages/api/auth/[...nextauth]';
 
-// export async function loader({ request, params }: LoaderArgs) {
-//   try {
-//     let [dbx] = await DropboxClient.fromRequest(request);
+type Params = { year: string; issue: string };
+type Props = { params: Params };
 
-//     let { result: folder } = await dbx.listFolder({ path: `/${params.year}/${params.issue}` });
-//     let files = folder.entries
-//       .filter((entry): entry is files.FileMetadataReference => entry['.tag'] === 'file')
-//       .sort((a, b) => a.path_lower?.localeCompare(b.path_lower ?? '') ?? 0);
+export default async function Issue({ params }: Props) {
+  let session = await getAuthorizedSession();
+  let dbx = DropboxClient.fromSession(session);
 
-//     let pages = files.map<PreviewGridItem>((entry) => ({
-//       id: entry.id,
-//       name: parsePageName(entry.name),
-//       href: `./${formatPageName(Number(parsePageName(entry.name)))}`,
-//       previewUrl: entry.preview_url ?? '',
-//       previewPath: entry.path_lower ?? '',
-//     }));
+  let { result: folder } = await dbx.listFolder({ path: `/${params.year}/${params.issue}` });
+  let files = folder.entries
+    .filter((entry): entry is files.FileMetadataReference => entry['.tag'] === 'file')
+    .sort((a, b) => a.path_lower?.localeCompare(b.path_lower ?? '') ?? 0);
 
-//     return { items: pages };
-//   } catch {
-//     throw new Response('Not found', { status: 404 });
-//   }
-// }
+  let pages = files.map<PreviewGridItem>((entry) => {
+    let name = parsePageName(entry.name);
+    return {
+      id: entry.id,
+      name,
+      href: `/tidningen/${params.year}/${params.issue}/${formatPageName(Number(name))}`,
+      previewUrl: entry.preview_url ?? '',
+      previewPath: entry.path_lower ?? '',
+    };
+  });
 
-export default function Issue() {
-  let data = { items: [] as any };
-
-  return <PagePreviewGrid items={data.items} />;
+  return <PagePreviewGrid items={pages} />;
 }
