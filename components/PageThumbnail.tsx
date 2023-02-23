@@ -1,4 +1,6 @@
-import classNames from 'classnames';
+'use client';
+
+import Image, { ImageLoaderProps } from 'next/image';
 
 import { config } from '@/lib/config';
 import type { ThumbnailSize } from '@/lib/types/Dropbox';
@@ -9,40 +11,10 @@ interface PageThumbnailProps {
 }
 
 export const PageThumbnail: React.FC<PageThumbnailProps> = ({ url, className }) => {
-  let width = widthMap['w480h320'];
+  let width = widthMap['w256h256'];
   let height = Math.round(width / config['app.dropbox.aspect_ratio']);
 
-  const src = (size: ThumbnailSize, skipW = false) => {
-    let proxy = new URL(url);
-    let arg = JSON.parse(proxy.searchParams.get('arg') ?? '{}');
-    arg.size = size;
-    arg.format = 'png';
-    proxy.searchParams.set('arg', JSON.stringify(arg));
-
-    if (skipW) return proxy.toString();
-
-    return `${proxy.toString()} ${width}w`;
-  };
-
-  return (
-    <picture>
-      <source srcSet={src('w256h256')} media="(min-width: 1536px)" />
-      <source srcSet={src('w256h256')} media="(min-width: 1280px)" />
-      <source srcSet={src('w256h256')} media="(min-width: 1024px)" />
-      <source srcSet={src('w256h256')} media="(min-width: 768px)" />
-      <source srcSet={src('w128h128')} media="(min-width: 640px)" />
-      <source srcSet={src('w256h256')} media="(min-width: 425px)" />
-      <source srcSet={src('w128h128')} />
-      <img
-        className={classNames('aspect-paper h-auto w-full', className)}
-        src={src('w480h320', true)}
-        alt=""
-        width={width}
-        height={height}
-        loading="lazy"
-      />
-    </picture>
-  );
+  return <Image className={className} src={url} alt="" width={width} height={height} loading="lazy" loader={loader} />;
 };
 
 const widthMap: Record<ThumbnailSize, number> = {
@@ -56,3 +28,22 @@ const widthMap: Record<ThumbnailSize, number> = {
   w1024h768: 1024,
   w2048h1536: 2048,
 };
+
+function loader(props: ImageLoaderProps) {
+  let proxy = new URL(props.src);
+  let arg = JSON.parse(proxy.searchParams.get('arg') ?? '{}');
+  proxy.searchParams.set(
+    'arg',
+    JSON.stringify({ ...arg, format: 'png', mode: 'fitone_bestfit', size: getThumbnailSize(props.width) }),
+  );
+
+  return proxy.toString();
+}
+
+function getThumbnailSize(width: number) {
+  for (let [size, maxW] of Object.entries(widthMap) as [ThumbnailSize, number][]) {
+    if (width < maxW) return size;
+  }
+
+  return 'w2048h1536' as const;
+}
