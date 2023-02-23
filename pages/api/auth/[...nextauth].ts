@@ -46,8 +46,13 @@ const options: AuthOptions = {
       if (account != null && user != null) {
         token.accessToken = ensure(account.access_token, 'No access token received from auth endpoint');
         token.refreshToken = ensure(account.refresh_token, 'No refresh token received from auth endpoint');
-        token.expiresAt = ensure(account.expires_at, 'No expiry received from auth endpoint') + Date.now();
         token.pathRoot = ensure(user.pathRoot, 'No path root received from user info');
+        /**
+         * For some reason, can't really find out how, next-auth is giving back an expiry date that is multiplied by
+         * 1000 too many times. Usually it should come back as seconds from the provider, so multiplying once should be
+         * okey. But somehow by here the value has been multiplied again.
+         */
+        token.expiresAt = ensure(account.expires_at, 'No expiry received from auth endpoint') / 1000 + Date.now();
       }
 
       if (Date.now() < token.expiresAt) return token;
@@ -96,10 +101,11 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
 
     const refreshedTokens = RefreshToken.parse(await response.json());
 
+    let expiresAt = Date.now() + refreshedTokens.expires_in * 1000;
     return {
       ...token,
       accessToken: refreshedTokens.access_token,
-      expiresAt: Date.now() + refreshedTokens.expires_in * 1000,
+      expiresAt,
     };
   } catch (error) {
     return {
