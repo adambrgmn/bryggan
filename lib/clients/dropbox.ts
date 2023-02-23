@@ -89,7 +89,12 @@ export class DropboxClient extends Dropbox {
 
   getPreviewUrl(path: string) {
     let [year, issue = '01', page = `${year}-${issue}-001.pdf`] = path.replace(/^\//, '').split('/');
-    let pathname = join(config['app.dropbox.root'], year, issue, page);
+    let pathname = join(
+      config['app.dropbox.root'],
+      decodeURIComponent(year),
+      decodeURIComponent(issue),
+      decodeURIComponent(page),
+    );
 
     let url = new URL('files/get_thumbnail_v2', this.contentUrl);
     url.searchParams.set('arg', JSON.stringify({ resource: { '.tag': 'path', path: pathname } }));
@@ -101,7 +106,7 @@ export class DropboxClient extends Dropbox {
 
   getDownloadUrl(path: string) {
     let url = new URL('files/download', this.contentUrl);
-    url.searchParams.set('arg', JSON.stringify({ path }));
+    url.searchParams.set('arg', JSON.stringify({ path: decodeURIComponent(path) }));
     url.searchParams.set('authorization', `Bearer ${this.auth.getAccessToken()}`);
     if (this.pathRoot) url.searchParams.set('path_root', this.pathRoot);
 

@@ -14,7 +14,19 @@ export const PageThumbnail: React.FC<PageThumbnailProps> = ({ url, className }) 
   let width = widthMap['w256h256'];
   let height = Math.round(width / config['app.dropbox.aspect_ratio']);
 
-  return <Image className={className} src={url} alt="" width={width} height={height} loading="lazy" loader={loader} />;
+  return (
+    <Image
+      className={className}
+      src={url}
+      alt=""
+      width={width}
+      height={height}
+      sizes="(max-width: 640px) 50vw,
+             (max-width: 1024px) 25vw,
+             17vw"
+      loader={loader}
+    />
+  );
 };
 
 const widthMap: Record<ThumbnailSize, number> = {

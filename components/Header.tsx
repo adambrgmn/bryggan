@@ -2,6 +2,7 @@
 
 import * as Menu from '@reach/menu-button';
 import classNames from 'classnames';
+import Image from 'next/image';
 import Link from 'next/link';
 import { createContext, useContext } from 'react';
 import type { RectReadOnly } from 'react-use-measure';
@@ -9,7 +10,7 @@ import useMeasure from 'react-use-measure';
 
 import { config } from '@/lib/config';
 
-// import { Breadcrumbs } from './Breadcrumbs';
+import { Breadcrumbs } from './Breadcrumbs';
 
 interface HeaderContextType {
   ref: (element: HTMLElement | SVGElement | null) => void;
@@ -47,16 +48,16 @@ export const Header: React.FC<HeaderProps> = ({ profile }) => {
     <header ref={ref} className="sticky top-0 z-10 flex justify-between border-b bg-white px-6 py-2">
       <div className="flex items-center gap-1 text-sm">
         <h1 className="font-semibold">
-          <Link href=".">Bryggan</Link>
+          <Link href="/tidningen">Bryggan</Link>
         </h1>
-        {/* <Breadcrumbs /> */}
+        <Breadcrumbs />
       </div>
 
       <div className="flex items-center">
         <Menu.Menu>
           <Menu.MenuButton className="rounded-full border p-0.5" aria-label="User actions">
             {profile.avatar != null ? (
-              <img src={profile.avatar ?? ''} className="h-6 w-6 rounded-full" alt="" aria-hidden />
+              <Image src={profile.avatar} alt="" className="h-6 w-6 rounded-full" aria-hidden />
             ) : null}
           </Menu.MenuButton>
           <Menu.MenuPopover className="z-10 mt-1 w-40 rounded border bg-white shadow">

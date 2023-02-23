@@ -2,14 +2,14 @@
 
 import { AnimatePresence, motion, useIsPresent } from 'framer-motion';
 import Link from 'next/link';
+import { useSelectedLayoutSegments } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ChevronRight } from 'react-feather';
 import useMeasure from 'react-use-measure';
-import * as z from 'zod';
 
-// import { useSafeParams } from '@/lib/hooks/use-safe-params';
 import { compact } from '@/lib/utils/array';
 import { parsePageName } from '@/lib/utils/dropbox';
+import { join } from '@/lib/utils/path';
 
 interface BreadcrumbItem {
   label: string;
@@ -41,24 +41,16 @@ export function useBreadcrumbOverride() {
   return setBreadcrumbs;
 }
 
-let ParamsSchema = z.object({
-  year: z.string().optional(),
-  issue: z.string().optional(),
-  page: z.string().optional(),
-});
-
 export const Breadcrumbs: React.FC = () => {
   const ctx = useContext(BreadcrumbsContext);
 
-  let params = { year: '2023', issue: undefined, page: undefined }; // useSafeParams(ParamsSchema);
+  let [year, issue, page] = useSelectedLayoutSegments().map(decodeURIComponent);
   let items: BreadcrumbItem[] = ctx?.breadcrumb
     ? [ctx.breadcrumb]
     : compact([
-        params.year != null ? { label: params.year, to: `./${params.year}` } : null,
-        params.issue != null ? { label: params.issue, to: `./${params.year}/${params.issue}` } : null,
-        params.page != null
-          ? { label: parsePageName(params.page), to: `./${params.year}/${params.issue}/${params.page}` }
-          : null,
+        year != null ? { label: year, to: join('/tidningen', year) } : null,
+        issue != null ? { label: issue, to: join('/tidningen', year, issue) } : null,
+        page != null ? { label: parsePageName(page), to: join('/tidningen', year, issue, page) } : null,
       ]);
 
   return (
