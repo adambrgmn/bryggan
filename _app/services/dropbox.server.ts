@@ -2,12 +2,11 @@ import { join } from 'node:path';
 import process from 'node:process';
 
 import { createCookieSessionStorage } from '@remix-run/node';
+import { config } from '_app/config';
+import { ensure } from '_app/utils/assert';
 import type { files } from 'dropbox';
 import { Dropbox, DropboxAuth } from 'dropbox';
 import { z } from 'zod';
-
-import { config } from '~/config';
-import { ensure } from '~/utils/assert';
 
 const CLIENT_ID = ensure(process.env.DROPBOX_CLIENT_ID, 'DROPBOX_CLIENT_ID must be defined');
 const CLIENT_SECRET = ensure(process.env.DROPBOX_CLIENT_SECRET, 'DROPBOX_CLIENT_SECRET must be defined');

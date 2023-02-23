@@ -1,10 +1,9 @@
 import type { HtmlMetaDescriptor, LoaderArgs } from '@remix-run/node';
 import { redirect } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
-
-import { BreadcrumbProvider } from '~/components/Breadcrumbs';
-import { Header, HeaderProvider } from '~/components/Header';
-import { DropboxClient } from '~/services/dropbox.server';
+import { BreadcrumbProvider } from '_app/components/Breadcrumbs';
+import { Header, HeaderProvider } from '_app/components/Header';
+import { DropboxClient } from '_app/services/dropbox.server';
 
 export function meta(): HtmlMetaDescriptor {
   return {

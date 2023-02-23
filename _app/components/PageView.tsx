@@ -1,5 +1,7 @@
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import { Link, useNavigate } from '@remix-run/react';
+import { config } from '_app/config';
+import { useWindowEvent } from '_app/hooks/use-window-event';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cloneElement, startTransition, useRef, useState } from 'react';
@@ -7,9 +9,6 @@ import { ChevronLeft, ChevronRight, Loader, X, ZoomIn, ZoomOut } from 'react-fea
 import { Document, Page, pdfjs } from 'react-pdf';
 import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
-
-import { config } from '~/config';
-import { useWindowEvent } from '~/hooks/use-window-event';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.js';
 

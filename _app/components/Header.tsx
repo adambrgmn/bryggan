@@ -1,11 +1,10 @@
 import * as Menu from '@reach/menu-button';
 import { Link } from '@remix-run/react';
+import { config } from '_app/config';
 import classNames from 'classnames';
 import { createContext, useContext } from 'react';
 import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
-
-import { config } from '~/config';
 
 import { Breadcrumbs } from './Breadcrumbs';
 

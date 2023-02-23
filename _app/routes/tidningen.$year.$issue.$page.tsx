@@ -1,14 +1,13 @@
 import type { LinkDescriptor, LoaderArgs, MetaFunction } from '@remix-run/node';
 import { redirect } from '@remix-run/node';
 import { useLoaderData, useOutletContext } from '@remix-run/react';
+import { PageView } from '_app/components/PageView';
+import { config } from '_app/config';
+import { DropboxClient } from '_app/services/dropbox.server';
+import { formatPageName } from '_app/utils/dropbox';
 import reactPdfAnnotationLayerStyles from 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import reactPdfTextLayerStyles from 'react-pdf/dist/esm/Page/TextLayer.css';
 import * as z from 'zod';
-
-import { PageView } from '~/components/PageView';
-import { config } from '~/config';
-import { DropboxClient } from '~/services/dropbox.server';
-import { formatPageName } from '~/utils/dropbox';
 
 let PageParamsSchema = z.object({
   year: z.string(),

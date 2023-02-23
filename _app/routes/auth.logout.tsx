@@ -1,8 +1,7 @@
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { redirect } from '@remix-run/node';
-
-import { config } from '~/config';
-import { DropboxClient, storage } from '~/services/dropbox.server';
+import { config } from '_app/config';
+import { DropboxClient, storage } from '_app/services/dropbox.server';
 
 export async function loader({ request }: LoaderArgs) {
   let [, session] = await DropboxClient.fromRequest(request);

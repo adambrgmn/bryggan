@@ -1,6 +1,5 @@
 import { Form } from '@remix-run/react';
-
-import { config } from '~/config';
+import { config } from '_app/config';
 
 export const SignIn: React.FC = () => {
   return (

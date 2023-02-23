@@ -1,8 +1,7 @@
 import type { LoaderArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
-
-import { SignIn } from '~/components/Auth';
-import { DropboxClient } from '~/services/dropbox.server';
+import { SignIn } from '_app/components/Auth';
+import { DropboxClient } from '_app/services/dropbox.server';
 
 export default function Index() {
   let data = useLoaderData<typeof loader>();

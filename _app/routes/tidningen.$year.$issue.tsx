@@ -1,13 +1,12 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/node';
 import { Outlet, useCatch, useLoaderData } from '@remix-run/react';
+import { GenericCatchBoundary } from '_app/components/CatchBoundary';
+import type { PreviewGridItem } from '_app/components/PreviewGrid';
+import { PagePreviewGrid } from '_app/components/PreviewGrid';
+import { DropboxClient } from '_app/services/dropbox.server';
+import { formatPageName, parsePageName } from '_app/utils/dropbox';
 import type { files } from 'dropbox';
 import { Fragment } from 'react';
-
-import { GenericCatchBoundary } from '~/components/CatchBoundary';
-import type { PreviewGridItem } from '~/components/PreviewGrid';
-import { PagePreviewGrid } from '~/components/PreviewGrid';
-import { DropboxClient } from '~/services/dropbox.server';
-import { formatPageName, parsePageName } from '~/utils/dropbox';
 
 export const meta: MetaFunction<typeof loader> = (args) => {
   return {

@@ -14,7 +14,7 @@
     "baseUrl": ".",
     "skipLibCheck": true,
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["_app/*"]
     },
 
     // Remix takes care of building everything in `remix build`.

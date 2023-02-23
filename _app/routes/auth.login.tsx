@@ -1,8 +1,7 @@
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { redirect } from '@remix-run/node';
-
-import { SignIn } from '~/components/Auth';
-import { DropboxClient } from '~/services/dropbox.server';
+import { SignIn } from '_app/components/Auth';
+import { DropboxClient } from '_app/services/dropbox.server';
 
 export default function Screen() {
   return <SignIn />;
