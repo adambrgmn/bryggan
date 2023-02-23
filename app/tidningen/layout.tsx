@@ -11,7 +11,7 @@ export default async function Layout({ children }: React.PropsWithChildren) {
       <HeaderProvider>
         <div className="relative flex flex-col gap-6">
           <Header profile={session.user} hashedEmail={md5(session.user.email)} />
-          <main className="container relative mx-auto px-6">{children}</main>
+          <main className="container relative mx-auto mb-16 px-6">{children}</main>
         </div>
       </HeaderProvider>
     </BreadcrumbProvider>

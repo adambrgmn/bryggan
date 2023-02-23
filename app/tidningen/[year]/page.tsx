@@ -1,3 +1,5 @@
+import { Metadata } from 'next';
+
 import { IssuePreviewGrid, PreviewGridItem } from '@/components/PreviewGrid';
 import { DropboxClient } from '@/lib/clients/dropbox';
 import { config } from '@/lib/config';
@@ -21,4 +23,10 @@ export default async function Page({ params }: Props) {
   }));
 
   return <IssuePreviewGrid items={issues} />;
+}
+
+export function generateMetadata({ params }: Props): Metadata {
+  return {
+    title: params.year,
+  };
 }

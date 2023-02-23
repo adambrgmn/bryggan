@@ -4,7 +4,7 @@ import * as Menu from '@reach/menu-button';
 import classNames from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState } from 'react';
 import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
 
@@ -46,8 +46,12 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ profile, hashedEmail }) => {
   let { ref } = useHeaderContext();
-  let avatarFallback = new URL(hashedEmail, 'https://www.gravatar.com/avatar/');
-  avatarFallback.searchParams.set('s', '24');
+  let [image, setImage] = useState<string | undefined>(() => {
+    let avatarFallback = new URL(hashedEmail, 'https://www.gravatar.com/avatar/');
+    avatarFallback.searchParams.set('s', '24');
+
+    return profile.image ?? avatarFallback.toString();
+  });
 
   return (
     <header ref={ref} className="sticky top-0 z-10 flex justify-between border-b bg-white px-6 py-2">
@@ -61,14 +65,19 @@ export const Header: React.FC<HeaderProps> = ({ profile, hashedEmail }) => {
       <div className="flex items-center">
         <Menu.Menu>
           <Menu.MenuButton className="rounded-full border p-0.5" aria-label="User actions">
-            <Image
-              src={profile.image ?? avatarFallback.toString()}
-              alt=""
-              className="h-6 w-6 rounded-full"
-              aria-hidden
-              width={24}
-              height={24}
-            />
+            {image ? (
+              <Image
+                src={image}
+                alt=""
+                className="h-6 w-6 rounded-full"
+                aria-hidden
+                width={24}
+                height={24}
+                onError={() => setImage(undefined)}
+              />
+            ) : (
+              <div className="h-6 w-6 rounded-full bg-gray-400" />
+            )}
           </Menu.MenuButton>
           <Menu.MenuPopover className="z-10 mt-1 w-40 rounded border bg-white shadow">
             <div className="border-b py-2">

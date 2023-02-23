@@ -14,13 +14,12 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@next/font": "13.1.6",
     "@reach/dialog": "0.18.0",
     "@reach/menu-button": "0.18.0",
     "classnames": "2.3.2",
     "dropbox": "^10.34.0",
-    "framer-motion": "9.0.7",
-    "next": "13.1.6",
+    "framer-motion": "9.1.6",
+    "next": "13.2.0",
     "next-auth": "^4.19.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -31,14 +30,14 @@
     "zod": "3.20.6"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "4.0.0",
-    "@types/node": "18.14.0",
+    "@trivago/prettier-plugin-sort-imports": "4.1.0",
+    "@types/node": "18.14.1",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "@types/react-pdf": "6.2.0",
     "autoprefixer": "^10.4.13",
     "eslint": "8.34.0",
-    "eslint-config-next": "13.1.6",
+    "eslint-config-next": "13.2.0",
     "patch-package": "6.5.1",
     "postcss": "^8.4.21",
     "prettier": "2.8.4",
