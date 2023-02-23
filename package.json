@@ -4,30 +4,24 @@
   "private": true,
   "sideEffects": false,
   "scripts": {
+    "dev": "next dev",
+    "start": "next start",
     "build": "npm run build:react-pdf && npm run build:app",
-    "build:app": "remix build",
+    "build:app": "next build",
     "build:react-pdf": "sh ./scripts/build-react-pdf-worker.sh",
-    "dev": "remix dev",
-    "predev": "npm run build:react-pdf",
-    "start": "remix-serve build",
-    "docker:build": "docker build -f Dockerfile . -t remix/run",
-    "lint": "eslint app --ext .js,.ts,.tsx",
-    "format": "prettier app --write",
-    "routes": "npx remix routes",
+    "lint": "next lint",
+    "format": "prettier app components lib pages --write",
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@next/font": "13.1.6",
     "@reach/dialog": "0.18.0",
     "@reach/menu-button": "0.18.0",
-    "@remix-run/node": "1.13.0",
-    "@remix-run/react": "1.13.0",
-    "@remix-run/serve": "1.13.0",
     "classnames": "2.3.2",
-    "cross-env": "7.0.3",
-    "debug": "4.3.4",
     "dropbox": "^10.34.0",
     "framer-motion": "9.0.7",
-    "isbot": "3.6.6",
+    "next": "13.1.6",
+    "next-auth": "^4.19.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-feather": "2.0.10",
@@ -37,21 +31,22 @@
     "zod": "3.20.6"
   },
   "devDependencies": {
-    "@remix-run/dev": "1.13.0",
-    "@remix-run/eslint-config": "1.13.0",
     "@trivago/prettier-plugin-sort-imports": "4.0.0",
-    "@types/debug": "4.1.7",
+    "@types/node": "18.14.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "@types/react-pdf": "6.2.0",
+    "autoprefixer": "^10.4.13",
     "eslint": "8.34.0",
+    "eslint-config-next": "13.1.6",
     "patch-package": "6.5.1",
+    "postcss": "^8.4.21",
     "prettier": "2.8.4",
     "prettier-plugin-tailwindcss": "0.2.3",
-    "tailwindcss": "3.2.7",
+    "tailwindcss": "^3.2.7",
     "typescript": "4.9.5"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   }
 }

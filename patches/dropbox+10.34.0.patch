@@ -1,9 +1,22 @@
+diff --git a/node_modules/dropbox/cjs/src/auth.js b/node_modules/dropbox/cjs/src/auth.js
+index 9717e2a..77ea59b 100644
+--- a/node_modules/dropbox/cjs/src/auth.js
++++ b/node_modules/dropbox/cjs/src/auth.js
+@@ -63,7 +63,7 @@ var DropboxAuth = /*#__PURE__*/function () {
+       crypto = self.crypto;
+       /* eslint-enable no-restricted-globals */
+     } else {
+-      fetch = require('node-fetch'); // eslint-disable-line global-require
++      fetch = global.fetch; // require('node-fetch'); // eslint-disable-line global-require
+ 
+       crypto = require('crypto'); // eslint-disable-line global-require
+     }
 diff --git a/node_modules/dropbox/types/dropbox_types.d.ts b/node_modules/dropbox/types/dropbox_types.d.ts
-index 0023a19..ce79e40 100644
+index 0023a19..8eabe14 100644
 --- a/node_modules/dropbox/types/dropbox_types.d.ts
 +++ b/node_modules/dropbox/types/dropbox_types.d.ts
 @@ -26,6 +26,18 @@
- 
+   
    type Timestamp = string;
  
 +  export namespace auth {
@@ -22,7 +35,7 @@ index 0023a19..ce79e40 100644
      /**
       * Image data in base64-encoded bytes.
 diff --git a/node_modules/dropbox/types/index.d.ts b/node_modules/dropbox/types/index.d.ts
-index b6a073b..44886e6 100644
+index b6a073b..04b60e3 100644
 --- a/node_modules/dropbox/types/index.d.ts
 +++ b/node_modules/dropbox/types/index.d.ts
 @@ -51,7 +51,7 @@ export class DropboxAuth {
