@@ -4,6 +4,7 @@ import process from 'node:process';
 import type { files } from 'dropbox';
 import { Dropbox, DropboxAuth } from 'dropbox';
 import { Session } from 'next-auth';
+import { cache } from 'react';
 import { z } from 'zod';
 
 import { config } from '@/lib/config';
@@ -23,16 +24,23 @@ export type DropboxSession = z.infer<typeof DropboxSessionSchema>;
 export type DopboxClientOptions = { clientId: string; clientSecret: string };
 
 export class DropboxClient extends Dropbox {
+  static #cache = new Map<string, DropboxClient>();
+  static fromSession(session: Session) {
+    let cachedClient = DropboxClient.#cache.get(session.accessToken);
+    if (cachedClient) return cachedClient;
+
+    let client = new DropboxClient({ clientId: CLIENT_ID, clientSecret: CLIENT_SECRET });
+    client.setSession(session);
+
+    DropboxClient.#cache.set(session.accessToken, client);
+
+    return client;
+  }
+
   pathRoot?: string;
   session?: DropboxSession;
 
   contentUrl = new URL('https://content.dropboxapi.com/2/');
-
-  static fromSession(session: Session) {
-    let client = new DropboxClient({ clientId: CLIENT_ID, clientSecret: CLIENT_SECRET });
-    client.setSession(session);
-    return client;
-  }
 
   constructor(options: DopboxClientOptions) {
     let auth = new DropboxAuth(options);
@@ -50,6 +58,24 @@ export class DropboxClient extends Dropbox {
 
     return session;
   }
+
+  listFolders = cache(async (path: string) => {
+    let { result: folder } = await this.listFolder({ path });
+    let folders = folder.entries
+      .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
+      .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0);
+
+    return folders;
+  });
+
+  listFiles = cache(async (path: string) => {
+    let { result: folder } = await this.listFolder({ path });
+    let folders = folder.entries
+      .filter((entry): entry is files.FileMetadataReference => entry['.tag'] === 'file')
+      .sort((a, b) => a.path_lower?.localeCompare(b.path_lower ?? '') ?? 0);
+
+    return folders;
+  });
 
   async listFolder(arg: files.ListFolderArg) {
     arg.path = join(config['app.dropbox.root'], decodeURIComponent(arg.path));

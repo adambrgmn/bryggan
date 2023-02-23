@@ -12,11 +12,7 @@ export default async function Issue({ params, children }: React.PropsWithChildre
   let session = await getAuthorizedSession();
   let dbx = DropboxClient.fromSession(session);
 
-  let { result: folder } = await dbx.listFolder({ path: `/${params.year}/${params.issue}` });
-  let files = folder.entries
-    .filter((entry): entry is files.FileMetadataReference => entry['.tag'] === 'file')
-    .sort((a, b) => a.path_lower?.localeCompare(b.path_lower ?? '') ?? 0);
-
+  let files = await dbx.listFiles(`/${params.year}/${params.issue}`);
   let pages = files.map<PreviewGridItem>((entry) => {
     let name = parsePageName(entry.name);
     return {

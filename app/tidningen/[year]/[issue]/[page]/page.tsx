@@ -26,18 +26,18 @@ export default async function Page(props: Props) {
 
   let params = PageParamsSchema.parse(props.params);
   let url = dbx.getDownloadUrl(buildFilePath(params));
-  let total = 24;
+  let issue = await dbx.listFiles(`/${params.year}/${params.issue}`);
 
   let current = params.page;
   let next: string | undefined = undefined;
   let previous: string | undefined = undefined;
 
-  if (current < total) next = formatPageName(current + 1);
+  if (current < issue.length) next = formatPageName(current + 1);
   if (current > 1) previous = formatPageName(current - 1);
 
   return (
     <Suspense fallback={<p>...</p>}>
-      <PageView url={url} next={next} previous={previous} total={total} current={current} />
+      <PageView url={url} next={next} previous={previous} total={issue.length} current={current} />
     </Suspense>
   );
 }
