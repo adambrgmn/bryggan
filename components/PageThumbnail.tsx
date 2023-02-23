@@ -1,9 +1,12 @@
 'use client';
 
+import type { ThumbnailSize } from '@/lib/types/Dropbox';
+import classNames from 'classnames';
 import Image, { ImageLoaderProps } from 'next/image';
+import { useState } from 'react';
+import { Loader } from 'react-feather';
 
 import { config } from '@/lib/config';
-import type { ThumbnailSize } from '@/lib/types/Dropbox';
 
 interface PageThumbnailProps {
   url: string;
@@ -14,18 +17,32 @@ export const PageThumbnail: React.FC<PageThumbnailProps> = ({ url, className }) 
   let width = widthMap['w256h256'];
   let height = Math.round(width / config['app.dropbox.aspect_ratio']);
 
+  let [loaded, setLoaded] = useState(false);
+
   return (
-    <Image
-      className={className}
-      src={url}
-      alt=""
-      width={width}
-      height={height}
-      sizes="(max-width: 640px) 50vw,
-             (max-width: 1024px) 25vw,
-             17vw"
-      loader={loader}
-    />
+    <div className="relative aspect-paper w-full">
+      <div
+        className={classNames(
+          'absolute inset-0 flex aspect-paper w-full items-center justify-center transition-opacity',
+          { 'opacity-0': loaded, 'opacity-1': !loaded },
+        )}
+      >
+        <Loader className="animate-spin" />
+      </div>
+      <Image
+        className={classNames(className, 'transition-opacity', { 'opacity-0': !loaded, 'opacity-1': loaded })}
+        src={url}
+        alt=""
+        width={width}
+        height={height}
+        sizes="(max-width: 640px) 50vw,
+               (max-width: 1024px) 25vw,
+               17vw"
+        loader={loader}
+        placeholder="empty"
+        onLoadingComplete={() => setLoaded(true)}
+      />
+    </div>
   );
 };
 
