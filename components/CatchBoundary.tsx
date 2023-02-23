@@ -1,31 +1,19 @@
 import { Meh } from 'react-feather';
 
 export type CatchBoundaryProps = {
-  caught: any;
+  caught: Error;
 };
 
 export function GenericCatchBoundary({ caught }: CatchBoundaryProps) {
-  switch (caught.status) {
-    case 404:
-      return <NotFound caught={caught} />;
-    default:
-      return <Generic caught={caught} />;
-  }
-}
-
-function Generic({ caught }: CatchBoundaryProps) {
   return (
     <div>
       <h1>Caught</h1>
-      <p>Status: {caught.status}</p>
-      <pre>
-        <code>{JSON.stringify(caught.data, null, 2)}</code>
-      </pre>
+      <p>Message: {caught.message}</p>
     </div>
   );
 }
 
-function NotFound({ caught }: CatchBoundaryProps) {
+export function NotFoundBoundary() {
   return (
     <div className="flex h-96 flex-col items-center justify-center gap-2">
       <Meh size={32} />

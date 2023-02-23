@@ -1,6 +1,7 @@
 import type { files } from 'dropbox';
 import { Dropbox, DropboxAuth } from 'dropbox';
 import { Session } from 'next-auth';
+import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { z } from 'zod';
 
@@ -58,21 +59,29 @@ export class DropboxClient extends Dropbox {
   }
 
   listFolders = cache(async (path: string) => {
-    let { result: folder } = await this.listFolder({ path });
-    let folders = folder.entries
-      .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
-      .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0);
+    try {
+      let { result: folder } = await this.listFolder({ path });
+      let folders = folder.entries
+        .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
+        .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0);
 
-    return folders;
+      return folders;
+    } catch (error) {
+      notFound();
+    }
   });
 
   listFiles = cache(async (path: string) => {
-    let { result: folder } = await this.listFolder({ path });
-    let folders = folder.entries
-      .filter((entry): entry is files.FileMetadataReference => entry['.tag'] === 'file')
-      .sort((a, b) => a.path_lower?.localeCompare(b.path_lower ?? '') ?? 0);
+    try {
+      let { result: folder } = await this.listFolder({ path });
+      let folders = folder.entries
+        .filter((entry): entry is files.FileMetadataReference => entry['.tag'] === 'file')
+        .sort((a, b) => a.path_lower?.localeCompare(b.path_lower ?? '') ?? 0);
 
-    return folders;
+      return folders;
+    } catch (error) {
+      notFound();
+    }
   });
 
   async listFolder(arg: files.ListFolderArg) {
