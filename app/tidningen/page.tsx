@@ -1,3 +1,5 @@
+import { Metadata } from 'next';
+
 import { IssuePreviewGrid, PreviewGridItem } from '@/components/PreviewGrid';
 import { DropboxClient } from '@/lib/clients/dropbox';
 import { config } from '@/lib/config';
@@ -37,3 +39,7 @@ export default async function Page() {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Tidningen',
+};

@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import { Suspense, lazy } from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -40,6 +41,12 @@ export default async function Page(props: Props) {
       <PageView url={url} next={next} previous={previous} total={issue.length} current={current} />
     </Suspense>
   );
+}
+
+export function generateMetadata({ params }: Props): Metadata {
+  return {
+    title: [params.year, params.issue, params.page].join('-'),
+  };
 }
 
 function buildFilePath(params: z.infer<typeof PageParamsSchema>) {
