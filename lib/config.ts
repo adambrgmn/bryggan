@@ -4,6 +4,6 @@ export const config = {
   'app.dropbox.aspect_height': 303,
   'app.dropbox.aspect_ratio': 233 / 303,
 
-  'route.login': '/auth/login',
-  'route.logout': '/auth/logout',
+  'route.login': '/api/auth/signin/dropbox',
+  'route.logout': '/auth/signout',
 };

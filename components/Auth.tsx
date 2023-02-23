@@ -1,17 +1,19 @@
-import { config } from '@/lib/config';
+'use client';
+
+import { signIn, signOut } from 'next-auth/react';
 
 export const SignIn: React.FC = () => {
   return (
-    <form method="post" action={config['route.login']}>
-      <button type="submit">Sign in</button>
-    </form>
+    <button type="button" onClick={() => signIn('dropbox')}>
+      Sign in
+    </button>
   );
 };
 
 export const SignOut: React.FC = () => {
   return (
-    <form method="post" action={config['route.logout']}>
-      <button type="submit">Sign out</button>
-    </form>
+    <button type="button" onClick={() => signOut()}>
+      Sign out
+    </button>
   );
 };
