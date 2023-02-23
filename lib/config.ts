@@ -6,5 +6,5 @@ export const config = {
 
   'route.app': '/tidningen',
   'route.signin': '/api/auth/signin/dropbox',
-  'route.signout': '/auth/signout',
+  'route.signout': '/api/auth/signout',
 };
