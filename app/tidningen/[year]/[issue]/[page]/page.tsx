@@ -37,7 +37,7 @@ export default async function Page(props: Props) {
   if (current > 1) previous = formatPageName(current - 1);
 
   return (
-    <Suspense fallback={<p>...</p>}>
+    <Suspense fallback={<div />}>
       <PageView url={url} next={next} previous={previous} total={issue.length} current={current} />
     </Suspense>
   );
@@ -45,7 +45,7 @@ export default async function Page(props: Props) {
 
 export function generateMetadata({ params }: Props): Metadata {
   return {
-    title: [params.year, params.issue, params.page].join('-'),
+    title: decodeURIComponent([params.year, params.issue, params.page].join('-')),
   };
 }
 

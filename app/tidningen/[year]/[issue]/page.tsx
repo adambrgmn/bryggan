@@ -9,6 +9,6 @@ export default async function Issue() {
 
 export function generateMetadata({ params }: Props): Metadata {
   return {
-    title: [params.year, params.issue].join('-'),
+    title: decodeURIComponent([params.year, params.issue].join('-')),
   };
 }
