@@ -1,6 +1,3 @@
-import { join } from 'node:path';
-import process from 'node:process';
-
 import type { files } from 'dropbox';
 import { Dropbox, DropboxAuth } from 'dropbox';
 import { Session } from 'next-auth';
@@ -9,6 +6,7 @@ import { z } from 'zod';
 
 import { config } from '@/lib/config';
 import { ensure } from '@/lib/utils/assert';
+import { join } from '@/lib/utils/path';
 
 const CLIENT_ID = ensure(process.env.DROPBOX_CLIENT_ID, 'DROPBOX_CLIENT_ID must be defined');
 const CLIENT_SECRET = ensure(process.env.DROPBOX_CLIENT_SECRET, 'DROPBOX_CLIENT_SECRET must be defined');

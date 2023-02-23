@@ -1,7 +1,6 @@
-import { files } from 'dropbox';
-
 import { IssuePreviewGrid, PreviewGridItem } from '@/components/PreviewGrid';
 import { DropboxClient } from '@/lib/clients/dropbox';
+import { join } from '@/lib/utils/path';
 import { getAuthorizedSession } from '@/pages/api/auth/[...nextauth]';
 
 type Params = { year: string };
@@ -15,7 +14,7 @@ export default async function Page({ params }: Props) {
   let issues = folders.map<PreviewGridItem>((entry) => ({
     id: entry.id,
     name: entry.name,
-    href: `/tidningen/${params.year}/${entry.name}`,
+    href: join('/tidningen', params.year, entry.name),
     previewUrl: entry.preview_url ?? '',
     previewPath: entry.path_lower ?? '',
   }));

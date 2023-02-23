@@ -3,10 +3,10 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import * as z from 'zod';
 
-// import { PageView } from '@/components/PageView';
 import { DropboxClient } from '@/lib/clients/dropbox';
 import { config } from '@/lib/config';
 import { formatPageName } from '@/lib/utils/dropbox';
+import { join } from '@/lib/utils/path';
 import { getAuthorizedSession } from '@/pages/api/auth/[...nextauth]';
 
 let PageParamsSchema = z.object({
@@ -26,7 +26,7 @@ export default async function Page(props: Props) {
 
   let params = PageParamsSchema.parse(props.params);
   let url = dbx.getDownloadUrl(buildFilePath(params));
-  let issue = await dbx.listFiles(`/${params.year}/${params.issue}`);
+  let issue = await dbx.listFiles(join('/', params.year, params.issue));
 
   let current = params.page;
   let next: string | undefined = undefined;
