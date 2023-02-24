@@ -1,13 +1,13 @@
 diff --git a/node_modules/next-auth/core/routes/callback.js b/node_modules/next-auth/core/routes/callback.js
-index 2696b2d..cbe3fdc 100644
+index 2696b2d..45180c5 100644
 --- a/node_modules/next-auth/core/routes/callback.js
 +++ b/node_modules/next-auth/core/routes/callback.js
 @@ -388,6 +388,13 @@ async function callback(params) {
        provider: provider.id
      };
- 
+
 +    // Added for this specific use case
-+    if (provider.id === 'refresh_token') {
++    if (provider.id === 'credentials') {
 +      account.access_token = user.access_token;
 +      account.expires_at = user.expires_at;
 +      account.refresh_token = user.refresh_token;

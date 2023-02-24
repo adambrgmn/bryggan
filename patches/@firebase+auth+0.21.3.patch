@@ -1,0 +1,11 @@
+diff --git a/node_modules/@firebase/auth/dist/node-esm/index.js b/node_modules/@firebase/auth/dist/node-esm/index.js
+index f3aa151..2b835fd 100644
+--- a/node_modules/@firebase/auth/dist/node-esm/index.js
++++ b/node_modules/@firebase/auth/dist/node-esm/index.js
+@@ -4,5 +4,5 @@ import '@firebase/app';
+ import 'tslib';
+ import '@firebase/logger';
+ import '@firebase/component';
+-import 'node-fetch';
++// import 'node-fetch';
+ //# sourceMappingURL=index.js.map

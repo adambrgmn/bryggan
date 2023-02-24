@@ -7,6 +7,8 @@ import DropboxProvider from 'next-auth/providers/dropbox';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { signInWithEmailAndPassword } from '@/lib/clients/firebase';
+import { database } from '@/lib/clients/firebase-admin';
 import { config } from '@/lib/config';
 import { ensure } from '@/lib/utils/assert';
 
@@ -45,25 +47,34 @@ const dropbox = DropboxProvider({
 });
 
 const credentials = CredentialsProvider({
-  id: 'refresh_token',
-  name: 'Refresh Token',
+  name: 'E-mail & password',
   credentials: {
-    refresh_token: { label: 'Token', type: 'password' },
+    email: { label: 'E-mail', type: 'email' },
+    password: { label: 'Password', type: 'password' },
   },
   async authorize(credentials) {
     try {
-      if (credentials?.refresh_token == null) return null;
+      let credentialsSchema = z.object({ email: z.string().email(), password: z.string().min(8) });
+      let { email, password } = credentialsSchema.parse(credentials);
 
-      let { accessToken, expiresAt } = await fetchFreshAccessToken(credentials.refresh_token);
+      await signInWithEmailAndPassword(email, password);
+
+      let dbSchema = z.object({ refresh_token: z.string().min(8) });
+      let snapshot = await database().ref('data').once('value');
+      let value = dbSchema.parse(snapshot.val());
+
+      let { accessToken, expiresAt } = await fetchFreshAccessToken(value.refresh_token);
       let account = await fetchCurrentAccount(accessToken);
 
       return {
         ...profile(account),
+        email,
         access_token: accessToken,
         expires_at: expiresAt,
-        refresh_token: credentials.refresh_token,
+        refresh_token: value.refresh_token,
       };
     } catch (error) {
+      if (error instanceof z.ZodError) throw new Error('DatabseIncomplete');
       throw new Error('CredentialsSignin');
     }
   },
