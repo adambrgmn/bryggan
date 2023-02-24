@@ -1,6 +1,7 @@
 import { users } from 'dropbox';
-import NextAuth, { AuthOptions, getServerSession } from 'next-auth';
+import { AuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
+import NextAuth, { getServerSession } from 'next-auth/next';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import DropboxProvider from 'next-auth/providers/dropbox';
 import { redirect } from 'next/navigation';

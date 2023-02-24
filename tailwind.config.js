@@ -12,6 +12,9 @@ module.exports = {
       aspectRatio: {
         paper: '233 / 303',
       },
+      colors: {
+        dropbox: '#0061fe',
+      },
     },
   },
   plugins: [

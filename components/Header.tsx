@@ -12,6 +12,7 @@ import useMeasure from 'react-use-measure';
 import { config } from '@/lib/config';
 
 import { Breadcrumbs } from './Breadcrumbs';
+import { Sjofartstidningen } from './Icons';
 
 interface HeaderContextType {
   ref: (element: HTMLElement | SVGElement | null) => void;
@@ -57,7 +58,8 @@ export const Header: React.FC<HeaderProps> = ({ profile, hashedEmail }) => {
   return (
     <header ref={ref} className="sticky top-0 z-10 flex justify-between border-b bg-white px-6 py-2">
       <div className="flex items-center gap-1 text-sm">
-        <h1 className="font-semibold">
+        <h1 className="flex items-center gap-2 font-semibold tracking-wide">
+          <Sjofartstidningen aria-hidden size={24} />
           <Link href={config['route.app']}>Bryggan</Link>
         </h1>
         <Breadcrumbs />
