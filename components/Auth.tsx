@@ -107,7 +107,7 @@ function Credentials({ provider, csrf }: { provider: ClientSafeProvider; csrf: s
           name="refresh_token"
           required
           min={5}
-          className="flex h-10 w-full items-center justify-center gap-1 rounded border border-gray-300 px-2 text-sm text-gray-800 hover:bg-gray-50"
+          className="flex h-10 w-full rounded border border-gray-300 px-2 text-sm text-gray-800 hover:bg-gray-50"
         />
       </label>
       <button type="submit" className="h-10 rounded bg-black text-sm text-white hover:bg-gray-900">

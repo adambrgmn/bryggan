@@ -45,13 +45,13 @@ export function useBreadcrumbOverride() {
 export const Breadcrumbs: React.FC = () => {
   const ctx = useContext(BreadcrumbsContext);
 
-  let [year, issue, page] = useSelectedLayoutSegments().map(decodeURIComponent);
+  let [root, issue, page] = useSelectedLayoutSegments().map(decodeURIComponent);
   let items: BreadcrumbItem[] = ctx?.breadcrumb
     ? [ctx.breadcrumb]
     : compact([
-        year != null ? { label: year, to: join(config['route.app'], year) } : null,
-        issue != null ? { label: issue, to: join(config['route.app'], year, issue) } : null,
-        page != null ? { label: parsePageName(page), to: join(config['route.app'], year, issue, page) } : null,
+        root != null ? { label: roots[root] ?? root, to: join(config['route.app'], root) } : null,
+        issue != null ? { label: issue, to: join(config['route.app'], root, issue) } : null,
+        page != null ? { label: parsePageName(page), to: join(config['route.app'], root, issue, page) } : null,
       ]);
 
   return (
@@ -84,4 +84,8 @@ const Breadcrumb: React.FC<{ label: string; to: string }> = ({ label, to }) => {
       </Link>
     </motion.li>
   );
+};
+
+const roots: Record<string, string | undefined> = {
+  tools: 'Verktyg',
 };
