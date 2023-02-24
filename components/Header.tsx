@@ -2,6 +2,7 @@
 
 import * as Menu from '@reach/menu-button';
 import classNames from 'classnames';
+import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { createContext, useContext, useState } from 'react';
@@ -11,6 +12,7 @@ import useMeasure from 'react-use-measure';
 import { config } from '@/lib/config';
 
 import { Breadcrumbs } from './Breadcrumbs';
+import { Sjofartstidningen } from './Icons';
 
 interface HeaderContextType {
   ref: (element: HTMLElement | SVGElement | null) => void;
@@ -56,7 +58,8 @@ export const Header: React.FC<HeaderProps> = ({ profile, hashedEmail }) => {
   return (
     <header ref={ref} className="sticky top-0 z-10 flex justify-between border-b bg-white px-6 py-2">
       <div className="flex items-center gap-1 text-sm">
-        <h1 className="font-semibold">
+        <h1 className="flex items-center gap-2 font-semibold tracking-wide">
+          <Sjofartstidningen aria-hidden size={24} />
           <Link href={config['route.app']}>Bryggan</Link>
         </h1>
         <Breadcrumbs />
@@ -89,9 +92,9 @@ export const Header: React.FC<HeaderProps> = ({ profile, hashedEmail }) => {
 
             <Menu.MenuItems className="flex flex-col border-0 bg-transparent p-0 py-2 text-xs">
               <MenuLink href="/tidningen/settings">Settings</MenuLink>
-              <MenuLink href={config['route.signout']} destructive>
+              <MenuItem destructive onSelect={() => signOut()}>
                 Sign out
-              </MenuLink>
+              </MenuItem>
             </Menu.MenuItems>
           </Menu.MenuPopover>
         </Menu.Menu>
@@ -100,19 +103,30 @@ export const Header: React.FC<HeaderProps> = ({ profile, hashedEmail }) => {
   );
 };
 
-const MenuLink: React.FC<{ href: string; destructive?: boolean; children: React.ReactNode }> = ({
-  href,
-  destructive,
-  children,
-}) => {
-  let className = classNames({
+type MenuItemProps<T> = T & {
+  destructive?: boolean;
+  children: React.ReactNode;
+};
+
+const menuItemClassName = (destructive?: boolean) => {
+  return classNames({
     'px-2 py-1': true,
     'hover:bg-blue-500 hover:text-white selected:bg-blue-500 selected:text-white': !destructive,
     'text-red-500 hover:bg-red-500 hover:text-white': destructive,
   });
+};
 
+const MenuItem: React.FC<MenuItemProps<{ onSelect: () => void }>> = ({ onSelect, destructive, children }) => {
   return (
-    <Menu.MenuLink as={Link} href={href} className={className}>
+    <Menu.MenuItem onSelect={onSelect} className={menuItemClassName(destructive)}>
+      {children}
+    </Menu.MenuItem>
+  );
+};
+
+const MenuLink: React.FC<MenuItemProps<{ href: string }>> = ({ href, destructive, children }) => {
+  return (
+    <Menu.MenuLink as={Link} href={href} className={menuItemClassName(destructive)}>
       {children}
     </Menu.MenuLink>
   );
