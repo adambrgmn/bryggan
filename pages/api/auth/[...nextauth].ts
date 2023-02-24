@@ -79,6 +79,7 @@ const options: AuthOptions = {
     async jwt({ token, account, user }) {
       if (account != null && user != null) {
         try {
+          token.type = account.type;
           token.accessToken = ensure(account.access_token, 'No access token received from auth endpoint');
           token.refreshToken = ensure(account.refresh_token, 'No refresh token received from auth endpoint');
           token.pathRoot = ensure(user.pathRoot, 'No path root received from user info');
@@ -101,6 +102,7 @@ const options: AuthOptions = {
       session.refreshToken = token.refreshToken;
       session.expiresAt = token.expiresAt;
       session.pathRoot = token.pathRoot;
+      session.type = token.type;
 
       return session;
     },
@@ -174,12 +176,14 @@ declare module 'next-auth' {
     refreshToken: string;
     expiresAt: number;
     pathRoot: string;
+    type?: string;
     user: User;
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
+    type?: string;
     accessToken: string;
     refreshToken: string;
     expiresAt: number;

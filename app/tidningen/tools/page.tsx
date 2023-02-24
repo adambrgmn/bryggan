@@ -34,23 +34,24 @@ export default async function Page() {
       </Section>
 
       <hr className="border-gray-400" />
-
-      <Section
-        head={
-          <Fragment>
-            <Title>Dela refresh token</Title>
-            <Paragraph>
-              För att kunna ge personer utanför Sjöfartstidningens Dropbox-team tillgång till Bryggan kan man dela{' '}
-              {'"refresh token"'}. Kopiera texten här nedanför och skicka till den som du vill ska ha tillgång.
-            </Paragraph>
-            <Paragraph>
-              <em>Användaren får inte tillgång till Dropbox, bara Bryggan.</em>
-            </Paragraph>
-          </Fragment>
-        }
-      >
-        <CopyInput value={session.refreshToken} />
-      </Section>
+      {session.type === 'oauth' ? (
+        <Section
+          head={
+            <Fragment>
+              <Title>Dela refresh token</Title>
+              <Paragraph>
+                För att kunna ge personer utanför Sjöfartstidningens Dropbox-team tillgång till Bryggan kan man dela{' '}
+                {'"refresh token"'}. Kopiera texten här nedanför och skicka till den som du vill ska ha tillgång.
+              </Paragraph>
+              <Paragraph>
+                <em>Användaren får inte tillgång till Dropbox, bara Bryggan.</em>
+              </Paragraph>
+            </Fragment>
+          }
+        >
+          <CopyInput value={session.refreshToken} />
+        </Section>
+      ) : null}
     </div>
   );
 }
