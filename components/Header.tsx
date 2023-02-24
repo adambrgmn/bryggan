@@ -10,6 +10,7 @@ import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
 
 import { config } from '@/lib/config';
+import { join } from '@/lib/utils/path';
 
 import { Breadcrumbs } from './Breadcrumbs';
 import { Sjofartstidningen } from './Icons';
@@ -67,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({ profile, hashedEmail }) => {
 
       <div className="flex items-center">
         <Menu.Menu>
-          <Menu.MenuButton className="rounded-full border p-0.5" aria-label="User actions">
+          <Menu.MenuButton className="rounded-full border p-0.5" aria-label="Actions">
             {image ? (
               <Image
                 src={image}
@@ -85,15 +86,15 @@ export const Header: React.FC<HeaderProps> = ({ profile, hashedEmail }) => {
           <Menu.MenuPopover className="z-10 mt-1 w-40 rounded border bg-white shadow">
             <div className="border-b py-2">
               <p className="px-2 text-xs">
-                Signed in as <br />
+                Inloggad som <br />
                 <strong className="font-medium">{profile.name}</strong>
               </p>
             </div>
 
             <Menu.MenuItems className="flex flex-col border-0 bg-transparent p-0 py-2 text-xs">
-              <MenuLink href="/tidningen/settings">Settings</MenuLink>
+              <MenuLink href={join(config['route.app'], '/tools')}>Verktyg</MenuLink>
               <MenuItem destructive onSelect={() => signOut()}>
-                Sign out
+                Logga ut
               </MenuItem>
             </Menu.MenuItems>
           </Menu.MenuPopover>
