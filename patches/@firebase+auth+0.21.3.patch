@@ -1,3 +1,18 @@
+diff --git a/node_modules/@firebase/auth/dist/node-esm/index-0e3513a7.js b/node_modules/@firebase/auth/dist/node-esm/index-0e3513a7.js
+index cefcb7b..7860625 100644
+--- a/node_modules/@firebase/auth/dist/node-esm/index-0e3513a7.js
++++ b/node_modules/@firebase/auth/dist/node-esm/index-0e3513a7.js
+@@ -3,8 +3,8 @@ import { SDK_VERSION, _getProvider, _registerComponent, registerVersion, getApp
+ import { __rest } from 'tslib';
+ import { Logger, LogLevel } from '@firebase/logger';
+ import { Component } from '@firebase/component';
+-import * as fetchImpl from 'node-fetch';
+-
++// import * as fetchImpl from 'node-fetch';
++const fetchImpl = global.fetch
+ /**
+  * @license
+  * Copyright 2021 Google LLC
 diff --git a/node_modules/@firebase/auth/dist/node-esm/index.js b/node_modules/@firebase/auth/dist/node-esm/index.js
 index f3aa151..2b835fd 100644
 --- a/node_modules/@firebase/auth/dist/node-esm/index.js
