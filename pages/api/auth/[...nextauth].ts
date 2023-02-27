@@ -7,6 +7,7 @@ import DropboxProvider from 'next-auth/providers/dropbox';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import * as firebase from '@/lib/clients/firebase';
 import { config } from '@/lib/config';
 import { ensure } from '@/lib/utils/assert';
 
@@ -45,25 +46,32 @@ const dropbox = DropboxProvider({
 });
 
 const credentials = CredentialsProvider({
-  id: 'refresh_token',
-  name: 'Refresh Token',
+  name: 'E-mail & password',
   credentials: {
-    refresh_token: { label: 'Token', type: 'password' },
+    email: { label: 'E-mail', type: 'email' },
+    password: { label: 'Password', type: 'password' },
   },
   async authorize(credentials) {
     try {
-      if (credentials?.refresh_token == null) return null;
+      let credentialsSchema = z.object({ email: z.string().email(), password: z.string().min(8) });
+      let { email, password } = credentialsSchema.parse(credentials);
 
-      let { accessToken, expiresAt } = await fetchFreshAccessToken(credentials.refresh_token);
+      let { user } = await firebase.signInWithEmailAndPassword(email, password);
+      let refreshToken = await firebase.getRefreshToken();
+      let { accessToken, expiresAt } = await fetchFreshAccessToken(refreshToken);
       let account = await fetchCurrentAccount(accessToken);
 
       return {
         ...profile(account),
+        email,
+        name: user.displayName ?? account.name.display_name,
+        image: user.photoURL,
         access_token: accessToken,
         expires_at: expiresAt,
-        refresh_token: credentials.refresh_token,
+        refresh_token: refreshToken,
       };
     } catch (error) {
+      if (error instanceof z.ZodError) throw new Error('DatabseIncomplete');
       throw new Error('CredentialsSignin');
     }
   },
@@ -105,6 +113,13 @@ const options: AuthOptions = {
       session.type = token.type;
 
       return session;
+    },
+  },
+  events: {
+    signIn({ account }) {
+      if (account?.refresh_token != null) {
+        firebase.updateRefreshToken(account.refresh_token);
+      }
     },
   },
 };

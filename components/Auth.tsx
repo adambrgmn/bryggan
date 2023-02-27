@@ -1,7 +1,7 @@
 'use client';
 
 import { ClientSafeProvider, getCsrfToken, getProviders } from 'next-auth/react';
-import { use } from 'react';
+import { Fragment, use } from 'react';
 
 import { compact } from '@/lib/utils/array';
 import { ensure } from '@/lib/utils/assert';
@@ -25,9 +25,10 @@ const errors: Record<string, string> = {
 
   // Custom
   RefreshAccessTokenError: 'Sessionen har löpt ut. Vänligen logga in igen.',
+  DatabseIncomplete: 'Databasen är inte uppdaterad. Be någon i teamet logga in igen.',
 };
 
-export function Auth({ errorCode }: { errorCode?: string }) {
+export function Auth({ errorCode }: { errorCode: string | null }) {
   let csrf = ensure(use(getCsrfToken()), 'No csrf token found');
   let providers = ensure(use(getProviders()), 'No providers found');
 
@@ -60,18 +61,18 @@ export function Auth({ errorCode }: { errorCode?: string }) {
             <p className="text-sm text-gray-500">Vänligen logga in för att börja använda appen.</p>
           </div>
 
-          <div className="flex w-full flex-col items-stretch gap-8">{sections}</div>
-
           {errorMessage != null ? (
-            <div className="rounded border border-red-300 bg-red-100 p-2">
+            <div className="w-full rounded border border-red-300 bg-red-100 p-2">
               <h2 className="mb-1 text-lg font-semibold">Något gick snett</h2>
               <p className="text-sm text-gray-500">{errorMessage}</p>
             </div>
           ) : null}
+
+          <div className="flex w-full flex-col items-stretch gap-8">{sections}</div>
         </div>
       </div>
 
-      <div className="bg-gray-200"></div>
+      <div className="bg-gray-200" />
     </main>
   );
 }
@@ -95,26 +96,27 @@ function OAuthForm({ provider, csrf }: { provider: ClientSafeProvider; csrf: str
 }
 
 function Credentials({ provider, csrf }: { provider: ClientSafeProvider; csrf: string }) {
-  if (provider.id !== 'refresh_token') return null;
-
   return (
     <Form action={provider.callbackUrl} csrf={csrf}>
-      <label>
-        <span className="text-sm text-gray-700">{provider.name}</span>
-        <input
-          id="refresh_token"
-          type="password"
-          name="refresh_token"
-          required
-          min={5}
-          className="flex h-10 w-full rounded border border-gray-300 px-2 text-sm text-gray-800 hover:bg-gray-50"
-        />
-      </label>
+      {provider.id === 'refresh_token' ? <RefreshTokenFields /> : <CredentialsFields />}
       <button type="submit" className="h-10 rounded bg-black text-sm text-white hover:bg-gray-900">
         Logga in
       </button>
     </Form>
   );
+}
+
+function CredentialsFields() {
+  return (
+    <Fragment>
+      <Input label="E-mail" id="email" type="email" name="email" required />
+      <Input label="Password" id="password" type="password" name="password" required min={8} />
+    </Fragment>
+  );
+}
+
+function RefreshTokenFields() {
+  return <Input label="Refresh token" id="refresh_token" type="password" name="refresh_token" required min={5} />;
 }
 
 function Form({
@@ -128,6 +130,20 @@ function Form({
       <input type="hidden" name="csrfToken" value={csrf} />
       {children}
     </form>
+  );
+}
+
+type InputProps = { label: React.ReactNode } & Omit<JSX.IntrinsicElements['input'], 'className' | 'ref'>;
+
+function Input({ label, ...input }: InputProps) {
+  return (
+    <label>
+      <span className="text-xs text-gray-500">{label}</span>
+      <input
+        {...input}
+        className="flex h-10 w-full rounded border border-gray-300 px-2 text-sm text-gray-800 hover:bg-gray-50"
+      />
+    </label>
   );
 }
 
