@@ -5,7 +5,7 @@ try {
     databaseURL: 'https://sst-bryggan.firebaseio.com',
     credential: firebase.credential.cert({
       projectId: 'sst-bryggan',
-      privateKey: process.env.FIREBASE_PRIVATE_KEY,
+      privateKey: JSON.parse(process.env.FIREBASE_PRIVATE_KEY ?? ''),
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
     }),
   });
