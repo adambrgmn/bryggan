@@ -28,7 +28,7 @@ const errors: Record<string, string> = {
   DatabseIncomplete: 'Databasen är inte uppdaterad. Be någon i teamet logga in igen.',
 };
 
-export function Auth({ errorCode }: { errorCode: string | null }) {
+export function Auth({ errorCode }: { errorCode: string | undefined }) {
   let csrf = ensure(use(getCsrfToken()), 'No csrf token found');
   let providers = ensure(use(getProviders()), 'No providers found');
 

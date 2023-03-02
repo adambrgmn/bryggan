@@ -102,7 +102,7 @@ const options: AuthOptions = {
         }
       }
 
-      if (Date.now() < token.expiresAt) return token;
+      if (Date.now() > token.expiresAt) return token;
       return refreshAccessToken(token);
     },
     async session({ session, token }) {

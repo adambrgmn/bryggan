@@ -58,43 +58,39 @@ export class DropboxClient extends Dropbox {
   }
 
   listFolders = cache(async (path: string) => {
-    try {
-      let { result: folder } = await this.listFolder({ path });
-      let folders = folder.entries
-        .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
-        .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0);
+    let { result: folder } = await this.listFolder({ path });
+    let folders = folder.entries
+      .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
+      .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0);
 
-      return folders;
-    } catch (error) {
-      if (error instanceof DropboxResponseError && error.status === 401) redirect(config['route.signout']);
-      notFound();
-    }
+    return folders;
   });
 
   listFiles = cache(async (path: string) => {
-    try {
-      let { result: folder } = await this.listFolder({ path });
-      let folders = folder.entries
-        .filter((entry): entry is files.FileMetadataReference => entry['.tag'] === 'file')
-        .sort((a, b) => a.path_lower?.localeCompare(b.path_lower ?? '') ?? 0);
+    let { result: folder } = await this.listFolder({ path });
+    let folders = folder.entries
+      .filter((entry): entry is files.FileMetadataReference => entry['.tag'] === 'file')
+      .sort((a, b) => a.path_lower?.localeCompare(b.path_lower ?? '') ?? 0);
 
-      return folders;
-    } catch (error) {
-      if (error instanceof DropboxResponseError && error.status === 401) redirect(config['route.signout']);
-      notFound();
-    }
+    return folders;
   });
 
   async listFolder(arg: files.ListFolderArg) {
-    arg.path = join(config['app.dropbox.root'], decodeURIComponent(arg.path));
-    let response = await this.filesListFolder(arg);
+    try {
+      arg.path = join(config['app.dropbox.root'], decodeURIComponent(arg.path));
+      let response = await this.filesListFolder(arg);
 
-    for (let entry of response.result.entries) {
-      entry.path_lower = entry.path_lower?.replace(config['app.dropbox.root'], '');
-      entry.preview_url = this.getPreviewUrl(entry.path_lower ?? '');
+      for (let entry of response.result.entries) {
+        entry.path_lower = entry.path_lower?.replace(config['app.dropbox.root'], '');
+        entry.preview_url = this.getPreviewUrl(entry.path_lower ?? '');
+      }
+
+      return response;
+    } catch (error) {
+      console.log(error);
+      if (error instanceof DropboxResponseError && error.status === 401) redirect(config['route.signout']);
+      notFound();
     }
-
-    return response;
   }
 
   getPreviewUrl(path: string) {

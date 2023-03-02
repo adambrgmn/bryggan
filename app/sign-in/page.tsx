@@ -4,11 +4,14 @@ import { redirect, useSearchParams } from 'next/navigation';
 import { Auth } from '@/components/Auth';
 import { config } from '@/lib/config';
 
-export default async function SignIn() {
+type Props = {
+  searchParams: { error?: string | undefined };
+};
+
+export default async function SignIn({ searchParams }: Props) {
   let session = await getServerSession();
-  let searchParams = useSearchParams();
 
   if (session) redirect(config['route.app']);
 
-  return <Auth errorCode={searchParams.get('error')} />;
+  return <Auth errorCode={searchParams.error} />;
 }
