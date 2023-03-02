@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
-import { Suspense, lazy } from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import * as z from 'zod';
 
+import { PageView } from '@/components/PageView';
 import { DropboxClient } from '@/lib/clients/dropbox';
 import { config } from '@/lib/config';
 import { formatPageName } from '@/lib/utils/dropbox';
@@ -18,8 +18,6 @@ let PageParamsSchema = z.object({
 
 type Params = { year: string; issue: string; page: string };
 type Props = { params: Params };
-
-const PageView = lazy(() => import('@/components/PageView').then(({ PageView }) => ({ default: PageView })));
 
 export default async function Page(props: Props) {
   let session = await getAuthorizedSession();
@@ -36,11 +34,7 @@ export default async function Page(props: Props) {
   if (current < issue.length) next = formatPageName(current + 1);
   if (current > 1) previous = formatPageName(current - 1);
 
-  return (
-    <Suspense fallback={<div />}>
-      <PageView url={url} next={next} previous={previous} total={issue.length} current={current} />
-    </Suspense>
-  );
+  return <PageView url={url} next={next} previous={previous} total={issue.length} current={current} />;
 }
 
 export function generateMetadata({ params }: Props): Metadata {
