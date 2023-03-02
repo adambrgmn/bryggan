@@ -1,5 +1,5 @@
 import { getServerSession } from 'next-auth';
-import { redirect, useSearchParams } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 import { Auth } from '@/components/Auth';
 import { config } from '@/lib/config';
