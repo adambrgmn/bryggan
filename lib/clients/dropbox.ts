@@ -41,7 +41,7 @@ export class DropboxClient extends Dropbox {
   contentUrl = new URL('https://content.dropboxapi.com/2/');
 
   constructor(options: DopboxClientOptions) {
-    let auth = new DropboxAuth(options);
+    let auth = new DropboxAuth({ ...options, fetch: global.fetch });
     super({ auth });
   }
 

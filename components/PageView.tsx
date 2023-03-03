@@ -1,18 +1,20 @@
 'use client';
 
-import { DialogContent, DialogOverlay } from '@reach/dialog';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { cloneElement, startTransition, useRef, useState } from 'react';
+import { cloneElement, startTransition, useState } from 'react';
 import { ChevronLeft, ChevronRight, Loader, X, ZoomIn, ZoomOut } from 'react-feather';
 import { Document, Page, pdfjs } from 'react-pdf';
 import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
 
 import { config } from '@/lib/config';
+import { useInitialFocusRef } from '@/lib/hooks/use-initial-focus';
 import { useWindowEvent } from '@/lib/hooks/use-window-event';
+
+import { Dialog } from './Dialog';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.js';
 
@@ -25,11 +27,7 @@ interface PageViewProps {
 }
 
 export const PageView: React.FC<PageViewProps> = ({ url, next, previous, current, total }) => {
-  let router = useRouter();
-  let pathname = usePathname();
   let [scale, setScale] = useState(1);
-
-  let initialFocusRef = useRef<HTMLButtonElement>(null);
   let [wrapperRef, bounds] = useMeasure();
 
   const handleZoom = (amount: number | 'reset') => {
@@ -42,34 +40,17 @@ export const PageView: React.FC<PageViewProps> = ({ url, next, previous, current
     });
   };
 
-  function exit() {
-    let nextPathname = pathname?.split('/').slice(0, -1).join('/');
-    if (nextPathname != null) router.replace(nextPathname);
-  }
-
   return (
-    <DialogOverlay isOpen onDismiss={exit} className="z-20" initialFocusRef={initialFocusRef}>
-      <DialogContent
-        ref={wrapperRef}
-        className="relative m-4 flex h-[calc(100vh-2rem)] w-auto flex-col items-center overflow-hidden rounded p-4"
-        aria-label="Page preview"
-      >
-        <AnimatePresence initial={false}>
-          <PdfDocument key={url} url={url} scale={scale} bounds={bounds} />
-        </AnimatePresence>
+    <Dialog
+      ref={wrapperRef}
+      className="relative flex h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] items-center justify-center overflow-hidden rounded bg-white p-4"
+    >
+      <AnimatePresence initial={false}>
+        <PdfDocument key={url} url={url} scale={scale} bounds={bounds} />
+      </AnimatePresence>
 
-        <Controls
-          next={next}
-          previous={previous}
-          current={current}
-          exit={exit}
-          total={total}
-          scale={scale}
-          setScale={handleZoom}
-          initialFocusRef={initialFocusRef}
-        />
-      </DialogContent>
-    </DialogOverlay>
+      <Controls next={next} previous={previous} current={current} total={total} scale={scale} setScale={handleZoom} />
+    </Dialog>
   );
 };
 
@@ -82,11 +63,11 @@ const PdfDocument: React.FC<{ url: string; scale: number; bounds: RectReadOnly }
   });
 
   let height = bounds.height - 2 * 16;
-  let width = height * (config['app.dropbox.aspect_width'] / config['app.dropbox.aspect_height']);
+  let width = height * config['app.dropbox.aspect_ratio'];
 
   return (
     <motion.div
-      className="absolute overflow-scroll rounded border"
+      className="box-content overflow-scroll rounded border"
       style={{ width, height }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -104,26 +85,25 @@ const PdfDocument: React.FC<{ url: string; scale: number; bounds: RectReadOnly }
 interface ControlsProps extends Omit<PageViewProps, 'url'> {
   scale: number;
   setScale: (amount: number | 'reset') => void;
-  initialFocusRef: React.RefObject<HTMLButtonElement>;
-  exit: () => void;
 }
 
-const Controls: React.FC<ControlsProps> = ({
-  next,
-  previous,
-  current,
-  exit,
-  total,
-  scale,
-  setScale,
-  initialFocusRef,
-}) => {
+const Controls: React.FC<ControlsProps> = ({ next, previous, current, total, scale, setScale }) => {
   let router = useRouter();
   let pathname = usePathname();
   let basePathname = pathname?.split('/').slice(0, -1).join('/') ?? '';
 
+  let ref = useInitialFocusRef<HTMLButtonElement>();
+
+  function back() {
+    router.replace(basePathname);
+  }
+
   useWindowEvent('keydown', (event) => {
     switch (event.key) {
+      case 'Escape':
+        back();
+        break;
+
       case 'ArrowLeft':
         event.preventDefault();
         if (previous != null) router.push(`${basePathname}/${previous}`);
@@ -151,32 +131,32 @@ const Controls: React.FC<ControlsProps> = ({
   });
 
   return (
-    <div className="fixed bottom-10 mx-auto flex w-auto flex-none items-center gap-2 rounded-2xl border bg-white">
+    <div className="absolute bottom-10 mx-auto flex w-auto flex-none items-center gap-2 rounded-2xl border bg-white">
       <PaginationLink
         to={previous ? `${basePathname}/${previous}` : undefined}
-        label="Previous"
+        label="Föregående"
         icon={<ChevronLeft />}
       />
       <span className="text-xs tabular-nums">
         {current} / {total}
       </span>
-      <PaginationLink to={next ? `${basePathname}/${next}` : undefined} label="Next" icon={<ChevronRight />} />
+      <PaginationLink to={next ? `${basePathname}/${next}` : undefined} label="Nästa" icon={<ChevronRight />} />
 
       <ControlsDivider />
       <button
-        ref={initialFocusRef}
+        ref={ref}
         type="button"
-        aria-label="Close preview"
+        aria-label="Stäng förhandsvisning"
         className={sharedButtonClassName()}
-        onClick={exit}
+        onClick={back}
       >
         <X size={14} />
       </button>
       <ControlsDivider />
 
-      <ZoomButton label="Zoom out" icon={<ZoomOut />} onClick={() => setScale(-0.1)} />
+      <ZoomButton label="Zooma ut" icon={<ZoomOut />} onClick={() => setScale(-0.1)} />
       <span className="text-xs tabular-nums">{Math.round(scale * 100)}%</span>
-      <ZoomButton label="Zoom in" icon={<ZoomIn />} onClick={() => setScale(+0.1)} />
+      <ZoomButton label="Zooma in" icon={<ZoomIn />} onClick={() => setScale(+0.1)} />
     </div>
   );
 };

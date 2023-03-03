@@ -10,7 +10,7 @@ module.exports = {
         sans: ['var(--font-sans)', ...defaultTheme.fontFamily.sans],
       },
       aspectRatio: {
-        paper: '233 / 303',
+        paper: '960 / 1235',
       },
       colors: {
         dropbox: '#0061fe',
