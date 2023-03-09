@@ -1,10 +1,10 @@
 'use client';
 
+import * as Avatar from '@radix-ui/react-avatar';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import * as Menu from '@reach/menu-button';
 import classNames from 'classnames';
-import Image from 'next/image';
 import Link, { LinkProps } from 'next/link';
-import { useState } from 'react';
 
 type MenuProps = {
   label: string;
@@ -17,51 +17,58 @@ type MenuProps = {
 };
 
 export function MenuButton({ label, name, avatar, actions }: MenuProps) {
-  const [avatarSrc, setAvatarSrc] = useState(avatar);
+  let avatarEl = (
+    <Avatar.Root className="flex aspect-square h-6 w-6 items-center justify-center rounded-full">
+      <Avatar.Image className="rounded-full" src={avatar} alt={name} />
+      <Avatar.Fallback className="text-xs" delayMs={600}>
+        {initials(name)}
+      </Avatar.Fallback>
+    </Avatar.Root>
+  );
+
   return (
-    <Menu.Menu>
-      <Menu.MenuButton className="rounded-full border p-0.5" aria-label={label}>
-        {avatarSrc ? (
-          <Image
-            src={avatarSrc}
-            alt=""
-            className="h-6 w-6 rounded-full"
-            aria-hidden
-            width={24}
-            height={24}
-            onError={() => setAvatarSrc(undefined)}
-          />
-        ) : (
-          <div className="h-6 w-6 rounded-full bg-gray-400" />
-        )}
-      </Menu.MenuButton>
-      <Menu.MenuPopover className="z-10 mt-1 w-40 rounded border bg-white shadow">
-        <div className="border-b py-2">
-          <p className="px-2 text-xs">
-            Inloggad som <br />
-            <strong className="font-medium">{name}</strong>
-          </p>
-        </div>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <button className="rounded-full border p-0.5" aria-label={label}>
+          {avatarEl}
+        </button>
+      </DropdownMenu.Trigger>
 
-        <Menu.MenuItems className="flex flex-col border-0 bg-transparent p-0 py-2 text-xs">
-          {actions.map((action, idx) => {
-            if ('href' in action) {
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className="z-10 w-40 rounded border bg-white shadow" sideOffset={5}>
+          <DropdownMenu.Group className="py-2">
+            <DropdownMenu.Label className="px-2 text-xs">
+              Inloggad som <br />
+              <strong className="font-medium">{name}</strong>
+            </DropdownMenu.Label>
+          </DropdownMenu.Group>
+
+          <DropdownMenu.Separator className="border-b" />
+
+          <DropdownMenu.Group className="flex flex-col border-0 bg-transparent p-0 py-2 text-xs">
+            {actions.map((action, idx) => {
+              if ('href' in action) {
+                return (
+                  <DropdownMenu.Item asChild key={idx} className={menuItemClassName(action.destructive)}>
+                    <Link href={action.href}>{action.label}</Link>
+                  </DropdownMenu.Item>
+                );
+              }
+
               return (
-                <MenuLink key={idx} destructive={action.destructive} href={action.href}>
+                <DropdownMenu.Item
+                  key={idx}
+                  className={menuItemClassName(action.destructive)}
+                  onSelect={action.onSelect}
+                >
                   {action.label}
-                </MenuLink>
+                </DropdownMenu.Item>
               );
-            }
-
-            return (
-              <MenuItem key={idx} destructive={action.destructive} onSelect={action.onSelect}>
-                {action.label}
-              </MenuItem>
-            );
-          })}
-        </Menu.MenuItems>
-      </Menu.MenuPopover>
-    </Menu.Menu>
+            })}
+          </DropdownMenu.Group>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }
 type MenuItemProps<T> = T & {
@@ -96,3 +103,11 @@ const MenuLink: React.FC<MenuItemProps<{ href: NonNullable<LinkProps['href']> }>
     </Menu.MenuLink>
   );
 };
+
+function initials(name: string) {
+  return name
+    .split(' ')
+    .map((part) => part[0] ?? '')
+    .join('')
+    .toUpperCase();
+}
