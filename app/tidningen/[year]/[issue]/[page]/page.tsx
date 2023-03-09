@@ -28,11 +28,8 @@ export default async function Page(props: Props) {
   let issue = await dbx.listFiles(join('/', params.year, params.issue));
 
   let current = params.page;
-  let next: string | undefined = undefined;
-  let previous: string | undefined = undefined;
-
-  if (current < issue.length) next = formatPageName(current + 1);
-  if (current > 1) previous = formatPageName(current - 1);
+  let next = current < issue.length ? formatPageName(current + 1) : undefined;
+  let previous = current > 1 ? formatPageName(current - 1) : undefined;
 
   return <PageView url={url} next={next} previous={previous} total={issue.length} current={current} />;
 }
