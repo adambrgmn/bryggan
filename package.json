@@ -20,7 +20,7 @@
     "dropbox": "^10.34.0",
     "firebase": "^9.17.2",
     "firebase-admin": "^11.5.0",
-    "framer-motion": "9.1.7",
+    "framer-motion": "10.2.3",
     "next": "13.2.3",
     "next-auth": "^4.20.1",
     "react": "18.2.0",
@@ -29,11 +29,11 @@
     "react-intersection-observer": "9.4.3",
     "react-pdf": "6.2.2",
     "react-use-measure": "2.1.1",
-    "zod": "3.20.6"
+    "zod": "3.21.4"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "4.1.1",
-    "@types/node": "18.14.4",
+    "@types/node": "18.14.6",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "@types/react-pdf": "6.2.0",
