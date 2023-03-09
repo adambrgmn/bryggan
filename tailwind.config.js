@@ -19,7 +19,7 @@ module.exports = {
   },
   plugins: [
     plugin(({ addVariant }) => {
-      // @reach/menu-button
+      // @radix-ui/react-dropdown-menu
       addVariant('selected', '&[data-selected]');
     }),
   ],

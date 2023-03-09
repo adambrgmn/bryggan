@@ -2,7 +2,6 @@
 
 import * as Avatar from '@radix-ui/react-avatar';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import * as Menu from '@reach/menu-button';
 import classNames from 'classnames';
 import Link, { LinkProps } from 'next/link';
 
@@ -71,10 +70,6 @@ export function MenuButton({ label, name, avatar, actions }: MenuProps) {
     </DropdownMenu.Root>
   );
 }
-type MenuItemProps<T> = T & {
-  destructive?: boolean;
-  children: React.ReactNode;
-};
 
 const menuItemClassName = (destructive?: boolean) => {
   return classNames({
@@ -82,26 +77,6 @@ const menuItemClassName = (destructive?: boolean) => {
     'hover:bg-blue-500 hover:text-white selected:bg-blue-500 selected:text-white': !destructive,
     'text-red-500 hover:bg-red-500 hover:text-white': destructive,
   });
-};
-
-const MenuItem: React.FC<MenuItemProps<{ onSelect: () => void }>> = ({ onSelect, destructive, children }) => {
-  return (
-    <Menu.MenuItem onSelect={onSelect} className={menuItemClassName(destructive)}>
-      {children}
-    </Menu.MenuItem>
-  );
-};
-
-const MenuLink: React.FC<MenuItemProps<{ href: NonNullable<LinkProps['href']> }>> = ({
-  href,
-  destructive,
-  children,
-}) => {
-  return (
-    <Menu.MenuLink as={Link} href={href} className={menuItemClassName(destructive)}>
-      {children}
-    </Menu.MenuLink>
-  );
 };
 
 function initials(name: string) {
