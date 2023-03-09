@@ -1,4 +1,4 @@
-import { users } from 'dropbox';
+import type { users } from 'dropbox';
 import { AuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import NextAuth, { getServerSession } from 'next-auth/next';

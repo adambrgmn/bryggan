@@ -181,7 +181,7 @@ function useScale() {
   let pathname = usePathname();
   let searchParams = useSearchParams();
 
-  let scale = Number(searchParams.get('scale') ?? 1);
+  let scale = Number(searchParams?.get('scale') ?? 1);
   if (Number.isNaN(scale)) scale = 1;
 
   const setScale = (add: number | 'reset') => {

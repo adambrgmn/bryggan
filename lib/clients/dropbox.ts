@@ -1,5 +1,5 @@
-import { files } from 'dropbox';
-import { Session } from 'next-auth';
+import type { files } from 'dropbox';
+import type { Session } from 'next-auth';
 import { cache } from 'react';
 import { z } from 'zod';
 
