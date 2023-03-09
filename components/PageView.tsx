@@ -55,13 +55,6 @@ export function PageView({ url, next, previous, current, total }: PageViewProps)
 }
 
 function PdfDocument({ url, scale, bounds }: { url: string; scale: number; bounds: RectReadOnly }) {
-  let [state, setState] = useState<'loading' | 'success' | 'error'>('loading');
-  let className = classNames({
-    'transition-opacity': true,
-    'opacity-1': state === 'success',
-    'opacity-0': state !== 'success',
-  });
-
   let height = bounds.height - 2 * 16;
   let width = height * config['app.dropbox.aspect_ratio'];
 
@@ -73,19 +66,8 @@ function PdfDocument({ url, scale, bounds }: { url: string; scale: number; bound
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <AnimatePresence initial={false}>
-        {state === 'loading' ? <Spinner key="spinner" /> : null}
-        {state === 'error' ? <ErrorView key="error" /> : null}
-      </AnimatePresence>
-
-      <Document file={url} className={className}>
-        <Page
-          pageNumber={1}
-          width={width * scale}
-          onRenderSuccess={() => setState('success')}
-          onLoadError={() => setState('error')}
-          onRenderError={() => setState('error')}
-        />
+      <Document file={url} loading={() => <Spinner />} error={() => <ErrorView />}>
+        <Page pageNumber={1} width={width * scale} renderAnnotationLayer={false} renderTextLayer={false} />
       </Document>
     </motion.div>
   );
