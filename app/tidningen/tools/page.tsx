@@ -1,7 +1,5 @@
-import { Fragment } from 'react';
 import { Download as DownloadIcon, ExternalLink } from 'react-feather';
 
-import { CopyInput } from '@/components/Copy';
 import { getAuthorizedSession } from '@/pages/api/auth/[...nextauth]';
 
 type Download = {
@@ -34,24 +32,6 @@ export default async function Page() {
       </Section>
 
       <hr className="border-gray-400" />
-      {session.type === 'oauth' ? (
-        <Section
-          head={
-            <Fragment>
-              <Title>Dela refresh token</Title>
-              <Paragraph>
-                För att kunna ge personer utanför Sjöfartstidningens Dropbox-team tillgång till Bryggan kan man dela{' '}
-                {'"refresh token"'}. Kopiera texten här nedanför och skicka till den som du vill ska ha tillgång.
-              </Paragraph>
-              <Paragraph>
-                <em>Användaren får inte tillgång till Dropbox, bara Bryggan.</em>
-              </Paragraph>
-            </Fragment>
-          }
-        >
-          <CopyInput value={session.refreshToken} />
-        </Section>
-      ) : null}
     </div>
   );
 }
@@ -67,10 +47,6 @@ function Section({ head, children }: React.PropsWithChildren<{ head: React.React
 
 function Title({ children }: React.PropsWithChildren) {
   return <h2 className="mb-1 text-xl font-semibold">{children}</h2>;
-}
-
-function Paragraph({ children }: React.PropsWithChildren) {
-  return <p className="mb-2 max-w-prose text-sm text-gray-500">{children}</p>;
 }
 
 function DownloadLink({ kind, link, label }: Download) {
