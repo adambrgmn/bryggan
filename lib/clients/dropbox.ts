@@ -104,7 +104,7 @@ export class DropboxClient extends Dropbox {
 
     let url = new URL('files/get_thumbnail_v2', this.contentUrl);
     url.searchParams.set('arg', JSON.stringify({ resource: { '.tag': 'path', path: pathname } }));
-    url.searchParams.set('authorization', `Bearer ${this.auth.getAccessToken()}`);
+    url.searchParams.set('authorization', `Bearer ${ensure(this.auth.getAccessToken(), 'Missing access token')}`);
     if (this.pathRoot) url.searchParams.set('path_root', this.pathRoot);
 
     return url.toString();
@@ -113,7 +113,7 @@ export class DropboxClient extends Dropbox {
   getDownloadUrl(path: string) {
     let url = new URL('files/download', this.contentUrl);
     url.searchParams.set('arg', JSON.stringify({ path: decodeURIComponent(path) }));
-    url.searchParams.set('authorization', `Bearer ${this.auth.getAccessToken()}`);
+    url.searchParams.set('authorization', `Bearer ${ensure(this.auth.getAccessToken(), 'Missing access token')}`);
     if (this.pathRoot) url.searchParams.set('path_root', this.pathRoot);
 
     return url.toString();
