@@ -1,89 +1,53 @@
 'use client';
 
 import classNames from 'classnames';
-import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { cloneElement, startTransition, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { cloneElement } from 'react';
 import { ChevronLeft, ChevronRight, Frown, Loader, X, ZoomIn, ZoomOut } from 'react-feather';
 import { Document, Page, pdfjs } from 'react-pdf';
-import type { RectReadOnly } from 'react-use-measure';
 import useMeasure from 'react-use-measure';
 
 import { config } from '@/lib/config';
-import { useInitialFocusRef } from '@/lib/hooks/use-initial-focus';
 import { useWindowEvent } from '@/lib/hooks/use-window-event';
-
-import { Dialog } from './Dialog';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.js';
 
 interface PageViewProps {
   url: string;
+}
+
+export function PageView({ url }: PageViewProps) {
+  let [wrapperRef, bounds] = useMeasure();
+  let height = bounds.height - 2 * 16;
+  let width = height * config['app.dropbox.aspect_ratio'];
+
+  let [scale] = useScale();
+
+  return (
+    <div ref={wrapperRef} className="flex flex-1 justify-center">
+      <div className="box-content overflow-scroll rounded border" style={{ width, height }}>
+        <Document file={url} loading={() => <Spinner />} error={() => <ErrorView />}>
+          <Page pageNumber={1} width={width * scale} renderAnnotationLayer={false} renderTextLayer={false} />
+        </Document>
+      </div>
+    </div>
+  );
+}
+
+interface ControlsProps {
   next: string | undefined;
   previous: string | undefined;
   current: number;
   total: number;
 }
 
-export function PageView({ url, next, previous, current, total }: PageViewProps) {
-  let [scale, setScale] = useState(1);
-  let [wrapperRef, bounds] = useMeasure();
-
-  const handleZoom = (amount: number | 'reset') => {
-    startTransition(() => {
-      if (amount === 'reset') {
-        setScale(1);
-      } else {
-        setScale((prev) => prev + amount);
-      }
-    });
-  };
-
-  return (
-    <Dialog
-      ref={wrapperRef}
-      className="relative flex h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] items-center justify-center overflow-hidden rounded bg-white p-4"
-    >
-      <AnimatePresence initial={false}>
-        <PdfDocument key={url} url={url} scale={scale} bounds={bounds} />
-      </AnimatePresence>
-
-      <Controls next={next} previous={previous} current={current} total={total} scale={scale} setScale={handleZoom} />
-    </Dialog>
-  );
-}
-
-function PdfDocument({ url, scale, bounds }: { url: string; scale: number; bounds: RectReadOnly }) {
-  let height = bounds.height - 2 * 16;
-  let width = height * config['app.dropbox.aspect_ratio'];
-
-  return (
-    <motion.div
-      className="box-content overflow-scroll rounded border"
-      style={{ width, height }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <Document file={url} loading={() => <Spinner />} error={() => <ErrorView />}>
-        <Page pageNumber={1} width={width * scale} renderAnnotationLayer={false} renderTextLayer={false} />
-      </Document>
-    </motion.div>
-  );
-}
-
-interface ControlsProps extends Omit<PageViewProps, 'url'> {
-  scale: number;
-  setScale: (amount: number | 'reset') => void;
-}
-
-function Controls({ next, previous, current, total, scale, setScale }: ControlsProps) {
+export function PageControls({ next, previous, current, total }: ControlsProps) {
   let router = useRouter();
   let pathname = usePathname();
   let basePathname = pathname?.split('/').slice(0, -1).join('/') ?? '';
 
-  let ref = useInitialFocusRef<HTMLButtonElement>();
+  let [scale, setScale] = useScale();
 
   function back() {
     router.replace(basePathname);
@@ -134,13 +98,7 @@ function Controls({ next, previous, current, total, scale, setScale }: ControlsP
       <PaginationLink to={next ? `${basePathname}/${next}` : undefined} label="Nästa" icon={<ChevronRight />} />
 
       <ControlsDivider />
-      <button
-        ref={ref}
-        type="button"
-        aria-label="Stäng förhandsvisning"
-        className={sharedButtonClassName()}
-        onClick={back}
-      >
+      <button type="button" aria-label="Stäng förhandsvisning" className={sharedButtonClassName()} onClick={back}>
         <X size={14} />
       </button>
       <ControlsDivider />
@@ -204,14 +162,9 @@ function ControlsDivider() {
 
 function Spinner() {
   return (
-    <motion.div
-      className="absolute inset-0 flex items-center justify-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <div className="absolute inset-0 flex items-center justify-center">
       <Loader className="animate-spin" />
-    </motion.div>
+    </div>
   );
 }
 
@@ -221,4 +174,26 @@ function ErrorView() {
       <Frown className="text-red-500" />
     </div>
   );
+}
+
+function useScale() {
+  let router = useRouter();
+  let pathname = usePathname();
+  let searchParams = useSearchParams();
+
+  let scale = Number(searchParams.get('scale') ?? 1);
+  if (Number.isNaN(scale)) scale = 1;
+
+  const setScale = (add: number | 'reset') => {
+    let url = new URL(pathname ?? '', window.location.href);
+    if (add === 'reset') {
+      url.searchParams.delete('scale');
+    } else {
+      url.searchParams.set('scale', (scale + add).toFixed(1));
+    }
+
+    router.replace(url.href);
+  };
+
+  return [scale, setScale] as const;
 }
