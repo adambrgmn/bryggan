@@ -102,7 +102,7 @@ const options: AuthOptions = {
         }
       }
 
-      if (Date.now() > token.expiresAt) return token;
+      if (Date.now() < token.expiresAt) return token;
       return refreshAccessToken(token);
     },
     async session({ session, token }) {
@@ -143,6 +143,8 @@ const RefreshToken = z.object({
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     let fresh = await fetchFreshAccessToken(token.refreshToken);
+    console.log('Refreshed');
+    console.log({ now: new Date(), expires: new Date(fresh.expiresAt), expired: Date.now() > fresh.expiresAt });
     return { ...token, ...fresh };
   } catch (error) {
     throw new Error('RefreshAccessTokenError');
