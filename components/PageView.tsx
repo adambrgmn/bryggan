@@ -27,8 +27,15 @@ export function PageView({ url }: PageViewProps) {
   return (
     <div ref={wrapperRef} className="flex flex-1 justify-center">
       <div className="box-content overflow-scroll rounded border" style={{ width, height }}>
-        <Document file={url} loading={() => <Spinner />} error={() => <ErrorView />}>
-          <Page pageNumber={1} width={width * scale} renderAnnotationLayer={false} renderTextLayer={false} />
+        <Document file={url} loading={<Spinner />} error={<ErrorView />}>
+          <Page
+            pageNumber={1}
+            width={width * scale}
+            loading={<Spinner />}
+            error={<ErrorView />}
+            renderAnnotationLayer={false}
+            renderTextLayer={false}
+          />
         </Document>
       </div>
     </div>

@@ -1,12 +1,11 @@
 import { Metadata } from 'next';
 
 import { IssuePreviewGrid, PreviewGridItem } from '@/components/PreviewGrid';
+import { SectionTitle } from '@/components/SectionTitle';
 import { DropboxClient } from '@/lib/clients/dropbox';
 import { config } from '@/lib/config';
 import { join } from '@/lib/utils/path';
 import { getAuthorizedSession } from '@/pages/api/auth/[...nextauth]';
-
-import { SectionTitle } from './SectionTitle';
 
 export default async function Page() {
   let session = await getAuthorizedSession();
