@@ -25,7 +25,7 @@ const errors: Record<string, string> = {
 
   // Custom
   RefreshAccessTokenError: 'Sessionen har löpt ut. Vänligen logga in igen.',
-  DatabseIncomplete: 'Databasen är inte uppdaterad. Be någon i teamet logga in igen.',
+  DatabaseIncomplete: 'Databasen är inte uppdaterad. Be någon i teamet logga in igen.',
 };
 
 export function Auth({ errorCode }: { errorCode: string | undefined }) {
@@ -119,14 +119,9 @@ function RefreshTokenFields() {
   return <Input label="Refresh token" id="refresh_token" type="password" name="refresh_token" required min={5} />;
 }
 
-function Form({
-  action,
-  csrf,
-  onSubmit,
-  children,
-}: React.PropsWithChildren<{ action: string; csrf: string; onSubmit?: React.FormEventHandler<HTMLFormElement> }>) {
+function Form({ action, csrf, children }: React.PropsWithChildren<{ action: string; csrf: string }>) {
   return (
-    <form onSubmit={onSubmit} action={action} method="POST" className="flex flex-col items-stretch gap-4">
+    <form action={action} method="POST" className="flex flex-col items-stretch gap-4">
       <input type="hidden" name="csrfToken" value={csrf} />
       {children}
     </form>
