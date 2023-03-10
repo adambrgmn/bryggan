@@ -17,7 +17,6 @@
     "@radix-ui/react-avatar": "^1.0.2",
     "@radix-ui/react-dropdown-menu": "^2.0.4",
     "classnames": "2.3.2",
-    "dropbox": "^10.34.0",
     "firebase": "^9.17.2",
     "firebase-admin": "^11.5.0",
     "framer-motion": "10.2.3",
