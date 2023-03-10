@@ -1,5 +1,4 @@
 import { forwardRef } from 'react';
-import React, { Fragment } from 'react';
 import { IconProps } from 'react-feather';
 
 export const Dropbox = forwardRef<SVGSVGElement, IconProps>(function Dropbox(
