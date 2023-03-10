@@ -50,10 +50,7 @@ export class DropboxClient {
     });
 
     if (response.ok) return response.json() as unknown;
-
-    console.error('Body', body);
-    console.error('Response', await response.json());
-    throw response;
+    throw await DropboxError.fromResponse(response, body);
   }
 
   #content(pathname: string, body: unknown) {
@@ -108,4 +105,40 @@ export class DropboxClient {
   getDownloadUrl(path: string) {
     return this.#content('files/download', { path: decodeURIComponent(path) });
   }
+}
+
+export class DropboxError extends Error {
+  static isDropboxError(value: unknown): value is DropboxError {
+    return value != null && value instanceof DropboxError;
+  }
+
+  static async fromResponse(response: Response, input?: unknown) {
+    let { status, statusText, url } = response;
+    let data = await response.json().catch(() => response.text());
+    return new DropboxError({ status, statusText, url, data, input });
+  }
+
+  status: number;
+  statusText: string;
+  url: unknown;
+  data: unknown;
+  input?: unknown;
+
+  constructor({ status, statusText, url, data, input }: DropboxErrorInit) {
+    super(`${status} ${statusText}`);
+
+    this.status = status;
+    this.statusText = statusText;
+    this.url = url;
+    this.data = data;
+    this.input = input;
+  }
+}
+
+interface DropboxErrorInit {
+  status: number;
+  statusText: string;
+  url: string;
+  data: unknown;
+  input?: unknown;
 }
