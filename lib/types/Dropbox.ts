@@ -16,6 +16,7 @@ export const ThumbnailSizeSchema = z.union([
 export type Metadata = z.infer<typeof MetadataSchema>;
 export const MetadataSchema = z.object({
   id: z.string(),
+  name: z.string(),
   path_lower: z.string(),
   preview_url: z.string().optional(),
 });
