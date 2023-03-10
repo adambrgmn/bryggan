@@ -40,8 +40,6 @@ export function Auth({ errorCode }: { errorCode: string | undefined }) {
       switch (provider.type) {
         case 'credentials':
           return [<Credentials key={provider.id} provider={provider} csrf={csrf} />, divider];
-        case 'email':
-          return null;
         case 'oauth':
           return [<OAuthForm key={provider.id} provider={provider} csrf={csrf} />, divider];
       }
