@@ -1,10 +1,10 @@
-import { users } from 'dropbox';
 import { Account, CallbacksOptions, EventCallbacks, Profile } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import DropboxProvider from 'next-auth/providers/dropbox';
 import { z } from 'zod';
 
+import { FullAccount, FullAccountSchema } from '../types/Dropbox';
 import { ensure } from '../utils/assert';
 import * as firebase from './firebase';
 
@@ -116,10 +116,10 @@ export class DropboxAuth {
     headers.set('Authorization', `Bearer ${context.tokens.access_token}`);
 
     let res = await fetch(url, { method: 'POST', headers });
-    return res.json() as Promise<users.FullAccount>;
+    return FullAccountSchema.parse(await res.json());
   }
 
-  async #profile(account: users.FullAccount) {
+  async #profile(account: FullAccount) {
     return {
       id: account.account_id,
       email: account.email,

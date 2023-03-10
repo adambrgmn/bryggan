@@ -1,18 +1,15 @@
-import type { files } from 'dropbox';
 import type { Session } from 'next-auth';
 import { cache } from 'react';
-import { z } from 'zod';
 
 import { config } from '@/lib/config';
 import { join } from '@/lib/utils/path';
 
-export const DropboxSessionSchema = z.object({
-  accessToken: z.string(),
-  expiresAt: z.number(),
-  refreshToken: z.string(),
-  pathRoot: z.string(),
-});
-export type DropboxSession = z.infer<typeof DropboxSessionSchema>;
+import {
+  FileMetadataReference,
+  FolderMetadataReference,
+  ListFolderArgs,
+  ListFolderResultSchema,
+} from '../types/Dropbox';
 
 export type DopboxClientOptions = { clientId: string; clientSecret: string };
 
@@ -30,8 +27,10 @@ export class DropboxClient {
 
   #session: Session;
   #pathRoot: string;
-  #contentUrl = new URL('https://content.dropboxapi.com/2/');
-  #apiUrl = new URL('https://api.dropboxapi.com/2/');
+  #url = {
+    content: new URL('https://content.dropboxapi.com/2/'),
+    api: new URL('https://api.dropboxapi.com/2/'),
+  };
 
   constructor(session: Session) {
     this.#session = session;
@@ -39,7 +38,7 @@ export class DropboxClient {
   }
 
   async #api(pathname: string, body: unknown) {
-    let url = new URL(pathname, this.#apiUrl);
+    let url = new URL(pathname, this.#url.api);
     let response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
@@ -57,10 +56,19 @@ export class DropboxClient {
     throw response;
   }
 
+  #content(pathname: string, body: unknown) {
+    let url = new URL(pathname, this.#url.content);
+    url.searchParams.set('arg', JSON.stringify(body));
+    url.searchParams.set('authorization', `Bearer ${this.#session.accessToken}`);
+    url.searchParams.set('path_root', this.#pathRoot);
+
+    return url.toString();
+  }
+
   listFolders = cache(async (path: string) => {
     let folder = await this.#listFolder({ path });
     let folders = folder.entries
-      .filter((entry): entry is files.FolderMetadataReference => entry['.tag'] === 'folder')
+      .filter((entry): entry is FolderMetadataReference => entry['.tag'] === 'folder')
       .sort((a, b) => b.path_lower?.localeCompare(a.path_lower ?? '') ?? 0);
 
     return folders;
@@ -69,15 +77,16 @@ export class DropboxClient {
   listFiles = cache(async (path: string) => {
     let folder = await this.#listFolder({ path });
     let folders = folder.entries
-      .filter((entry): entry is files.FileMetadataReference => entry['.tag'] === 'file')
+      .filter((entry): entry is FileMetadataReference => entry['.tag'] === 'file')
       .sort((a, b) => a.path_lower?.localeCompare(b.path_lower ?? '') ?? 0);
 
     return folders;
   });
 
-  async #listFolder(arg: files.ListFolderArg) {
+  async #listFolder(arg: ListFolderArgs) {
     arg.path = join(config['app.dropbox.root'], decodeURIComponent(arg.path));
-    let response = (await this.#api('files/list_folder', arg)) as files.ListFolderResult;
+    let raw = await this.#api('files/list_folder', arg);
+    let response = ListFolderResultSchema.parse(raw);
 
     for (let entry of response.entries) {
       entry.path_lower = entry.path_lower?.replace(config['app.dropbox.root'], '');
@@ -88,27 +97,15 @@ export class DropboxClient {
   }
 
   getPreviewUrl(path: string) {
-    let [year, issue = '01', page = `${year}-${issue}-001.pdf`] = path.replace(/^\//, '').split('/');
-    let pathname = join(
-      config['app.dropbox.root'],
-      decodeURIComponent(year),
-      decodeURIComponent(issue),
-      decodeURIComponent(page),
-    );
+    let [year, issue = '01', page = `${year}-${issue}-001.pdf`] = decodeURIComponent(path)
+      .replace(/^\//, '')
+      .split('/');
+    let pathname = join(config['app.dropbox.root'], year, issue, page);
 
-    let url = new URL('files/get_thumbnail_v2', this.#contentUrl);
-    url.searchParams.set('arg', JSON.stringify({ resource: { '.tag': 'path', path: pathname } }));
-    url.searchParams.set('authorization', `Bearer ${this.#session.accessToken}`);
-    if (this.#pathRoot) url.searchParams.set('path_root', this.#pathRoot);
-
-    return url.toString();
+    return this.#content('files/get_thumbnail_v2', { resource: { '.tag': 'path', path: pathname } });
   }
 
   getDownloadUrl(path: string) {
-    let url = new URL('files/download', this.#contentUrl);
-    url.searchParams.set('arg', JSON.stringify({ path: decodeURIComponent(path) }));
-    url.searchParams.set('authorization', `Bearer ${this.#session.accessToken}`);
-    if (this.#pathRoot) url.searchParams.set('path_root', this.#pathRoot);
-    return url.toString();
+    return this.#content('files/download', { path: decodeURIComponent(path) });
   }
 }
