@@ -27,12 +27,20 @@ export default async function Page() {
     }),
   );
 
+  let priorities: number[] = [];
+  let total = 0;
+  for (let i = 0; i < years.length; i++) {
+    let count = Math.min(years[i].items.length, Math.max(config['images.above_fold'] - total, 0));
+    priorities.push(count);
+    total += count;
+  }
+
   return (
     <div>
-      {years.map((year) => (
+      {years.map((year, index) => (
         <section key={year.year} className="relative mb-12">
           <SectionTitle year={year.year}>{year.year}</SectionTitle>
-          <IssuePreviewGrid items={year.items} />
+          <IssuePreviewGrid items={year.items} prioritizeCount={priorities[index]} />
         </section>
       ))}
     </div>

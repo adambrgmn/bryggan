@@ -14,21 +14,22 @@ export interface PreviewGridItem {
 
 export interface PreviewGridProps {
   items: PreviewGridItem[];
+  prioritizeCount?: number;
 }
 
-export const IssuePreviewGrid: React.FC<PreviewGridProps> = ({ items }) => {
+export const IssuePreviewGrid: React.FC<PreviewGridProps> = ({ items, prioritizeCount = 0 }) => {
   return (
     <GridContainer>
       <ul className="relative z-0 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
-        {items.map((item) => (
-          <GridItem key={item.id} item={item} />
+        {items.map((item, index) => (
+          <GridItem key={item.id} item={item} priority={index < prioritizeCount} />
         ))}
       </ul>
     </GridContainer>
   );
 };
 
-export const PagePreviewGrid: React.FC<PreviewGridProps> = ({ items }) => {
+export const PagePreviewGrid: React.FC<PreviewGridProps> = ({ items, prioritizeCount = 0 }) => {
   let tuples: [PreviewGridItem | null, PreviewGridItem | null][] = [];
   let itemss = [null, ...items];
   for (let i = 0; i < itemss.length; i += 2) {
@@ -38,14 +39,16 @@ export const PagePreviewGrid: React.FC<PreviewGridProps> = ({ items }) => {
   return (
     <GridContainer>
       <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {tuples.map(([left, right], index) => (
-          <li key={left?.id ?? right?.id ?? index}>
-            <ul className="relative z-0 grid grid-cols-2 gap-0">
-              <GridItem item={left} tuple />
-              <GridItem item={right} tuple />
-            </ul>
-          </li>
-        ))}
+        {tuples.map(([left, right], index) => {
+          return (
+            <li key={left?.id ?? right?.id ?? index}>
+              <ul className="relative z-0 grid grid-cols-2 gap-0">
+                <GridItem item={left} tuple priority={index * 2 < prioritizeCount} />
+                <GridItem item={right} tuple priority={index * 2 + 1 < prioritizeCount} />
+              </ul>
+            </li>
+          );
+        })}
       </ul>
     </GridContainer>
   );
@@ -55,7 +58,13 @@ const GridContainer: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   return <div>{children}</div>;
 };
 
-const GridItem: React.FC<{ item: PreviewGridItem | null; tuple?: boolean }> = ({ item, tuple }) => {
+interface GridItemProps {
+  item: PreviewGridItem | null;
+  tuple?: boolean;
+  priority?: boolean;
+}
+
+const GridItem: React.FC<GridItemProps> = ({ item, tuple, priority }) => {
   const container = classNames({
     'relative p-2 border rounded bg-white': true,
     'hover:outline focus-within:outline outline-1 outline-blue-500': item != null,
@@ -77,7 +86,7 @@ const GridItem: React.FC<{ item: PreviewGridItem | null; tuple?: boolean }> = ({
     <li className={container}>
       {item != null ? (
         <Fragment>
-          <PageThumbnail url={item.previewUrl} className="mix-blend-multiply" />
+          <PageThumbnail url={item.previewUrl} className="mix-blend-multiply" priority={priority} />
           <Link href={item.href} className={link}>
             {item.name}
           </Link>

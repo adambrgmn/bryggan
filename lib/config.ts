@@ -7,4 +7,6 @@ export const config = {
   'route.app': '/tidningen',
   'route.signin': '/sign-in',
   'route.signout': '/api/auth/signout',
+
+  'images.above_fold': 18,
 };
