@@ -49,17 +49,13 @@ declare module 'next-auth' {
 
   interface Session {
     accessToken: string;
-    refreshToken: string;
-    expiresAt: number;
     pathRoot: string;
-    type?: string;
     user: User;
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
-    type?: string;
     accessToken: string;
     refreshToken: string;
     expiresAt: number;
