@@ -16,7 +16,7 @@ export class DropboxAuth {
   #clientId: string;
   #clientSecret: string;
 
-  #urls = {
+  #url = {
     www: new URL('https://www.dropbox.com/'),
     api: new URL('https://api.dropboxapi.com/'),
   };
@@ -27,7 +27,7 @@ export class DropboxAuth {
   }
 
   oAuthProvider = () => {
-    let authUrl = new URL('/oauth2/authorize', this.#urls.www);
+    let authUrl = new URL('/oauth2/authorize', this.#url.www);
     authUrl.searchParams.set('token_access_type', 'offline');
     authUrl.searchParams.set('scope', ['account_info.read', 'files.content.read'].join(' '));
 
@@ -54,7 +54,6 @@ export class DropboxAuth {
 
   jwt: JwtCallback = async ({ token, account, user }) => {
     if (account != null && user != null) {
-      token.type = account.type;
       token.accessToken = ensure(account.access_token, 'No access token received from auth endpoint');
       token.refreshToken = ensure(account.refresh_token, 'No refresh token received from auth endpoint');
       token.pathRoot = ensure(user.pathRoot, 'No path root received from user info');
@@ -72,10 +71,7 @@ export class DropboxAuth {
 
   session: SessionCallback = async ({ session, token }) => {
     session.accessToken = token.accessToken;
-    session.refreshToken = token.refreshToken;
-    session.expiresAt = token.expiresAt;
     session.pathRoot = token.pathRoot;
-    session.type = token.type;
 
     return session;
   };
@@ -93,7 +89,7 @@ export class DropboxAuth {
       let { user } = await firebase.signInWithEmailAndPassword(email, password);
       let refreshToken = await firebase.getRefreshToken();
       let { accessToken, expiresAt } = await this.#accessToken(refreshToken);
-      let account = await this.#userInfo({ tokens: { access_token: accessToken } }); // await fetchCurrentAccount(accessToken);
+      let account = await this.#userInfo({ tokens: { access_token: accessToken } });
 
       return {
         ...(await this.#profile(account)),
@@ -111,7 +107,7 @@ export class DropboxAuth {
   }
 
   async #userInfo(context: { tokens: { access_token?: string } }) {
-    let url = new URL('/2/users/get_current_account', this.#urls.api);
+    let url = new URL('/2/users/get_current_account', this.#url.api);
     let headers = new Headers();
     headers.set('Authorization', `Bearer ${context.tokens.access_token}`);
 
@@ -139,7 +135,7 @@ export class DropboxAuth {
   }
 
   async #accessToken(refreshToken: string) {
-    let url = new URL('/oauth2/token', this.#urls.api);
+    let url = new URL('/oauth2/token', this.#url.api);
     url.searchParams.set('grant_type', 'refresh_token');
     url.searchParams.set('refresh_token', refreshToken);
     url.searchParams.set('client_id', this.#clientId);
