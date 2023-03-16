@@ -22,7 +22,7 @@ export default async function Page({ params }: Props) {
     previewPath: entry.path_lower ?? '',
   }));
 
-  return <IssuePreviewGrid items={issues} />;
+  return <IssuePreviewGrid items={issues} prioritizeCount={config['images.above_fold']} />;
 }
 
 export function generateMetadata({ params }: Props): Metadata {

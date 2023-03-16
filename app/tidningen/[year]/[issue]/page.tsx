@@ -26,7 +26,7 @@ export default async function Issue({ params }: Props) {
     };
   });
 
-  return <PagePreviewGrid items={pages} />;
+  return <PagePreviewGrid items={pages} prioritizeCount={config['images.above_fold']} />;
 }
 
 export function generateMetadata({ params }: Props): Metadata {

@@ -1,19 +1,20 @@
 'use client';
 
-import type { ThumbnailSize } from '@/lib/types/Dropbox';
 import classNames from 'classnames';
 import Image, { ImageLoaderProps } from 'next/image';
 import { useState } from 'react';
 import { Loader } from 'react-feather';
 
 import { config } from '@/lib/config';
+import type { ThumbnailSize } from '@/lib/types/Dropbox';
 
 interface PageThumbnailProps {
   url: string;
+  priority?: boolean;
   className?: string;
 }
 
-export const PageThumbnail: React.FC<PageThumbnailProps> = ({ url, className }) => {
+export const PageThumbnail: React.FC<PageThumbnailProps> = ({ url, priority, className }) => {
   let width = widthMap['w256h256'];
   let height = Math.round(width / config['app.dropbox.aspect_ratio']);
 
@@ -41,6 +42,7 @@ export const PageThumbnail: React.FC<PageThumbnailProps> = ({ url, className }) 
         loader={loader}
         placeholder="empty"
         onLoadingComplete={() => setLoaded(true)}
+        priority={priority}
       />
     </div>
   );

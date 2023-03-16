@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
@@ -9,7 +10,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
     <html lang="en">
       <head />
-      <body className={['font-sans text-black', inter.variable].join(' ')}>{children}</body>
+      <body className={classNames('font-sans text-black', inter.variable)}>{children}</body>
     </html>
   );
 }
