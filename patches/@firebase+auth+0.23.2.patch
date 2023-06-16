@@ -1,0 +1,104 @@
+diff --git a/node_modules/@firebase/auth/dist/node-esm/index.js b/node_modules/@firebase/auth/dist/node-esm/index.js
+index 5b92f8b..6e3dc0d 100644
+--- a/node_modules/@firebase/auth/dist/node-esm/index.js
++++ b/node_modules/@firebase/auth/dist/node-esm/index.js
+@@ -3,6 +3,6 @@ import '@firebase/util';
+ import '@firebase/app';
+ import 'tslib';
+ import '@firebase/component';
+-import 'node-fetch';
++// import 'node-fetch';
+ import '@firebase/logger';
+ //# sourceMappingURL=index.js.map
+diff --git a/node_modules/@firebase/auth/dist/node-esm/internal.js b/node_modules/@firebase/auth/dist/node-esm/internal.js
+index 3a7a85a..d5a0d8c 100644
+--- a/node_modules/@firebase/auth/dist/node-esm/internal.js
++++ b/node_modules/@firebase/auth/dist/node-esm/internal.js
+@@ -4,7 +4,7 @@ import { isEmpty, querystring, getUA, querystringDecode } from '@firebase/util';
+ import 'tslib';
+ import { SDK_VERSION } from '@firebase/app';
+ import '@firebase/component';
+-import 'node-fetch';
++// import 'node-fetch';
+ import '@firebase/logger';
+ 
+ /**
+diff --git a/node_modules/@firebase/auth/dist/node-esm/totp-e47c784e.js b/node_modules/@firebase/auth/dist/node-esm/totp-e47c784e.js
+index d064713..93b0fb1 100644
+--- a/node_modules/@firebase/auth/dist/node-esm/totp-e47c784e.js
++++ b/node_modules/@firebase/auth/dist/node-esm/totp-e47c784e.js
+@@ -2,7 +2,7 @@ import { ErrorFactory, isBrowserExtension, isMobileCordova, isReactNative, Fireb
+ import { SDK_VERSION, _getProvider, _registerComponent, registerVersion, getApp } from '@firebase/app';
+ import { __rest } from 'tslib';
+ import { Component } from '@firebase/component';
+-import * as fetchImpl from 'node-fetch';
++// import * as fetchImpl from 'node-fetch';
+ import { Logger, LogLevel } from '@firebase/logger';
+ 
+ /**
+@@ -6556,7 +6556,7 @@ function registerAuth(clientPlatform) {
+  * limitations under the License.
+  */
+ // Initialize the fetch polyfill, the types are slightly off so just cast and hope for the best
+-FetchProvider.initialize(fetchImpl.default, fetchImpl.Headers, fetchImpl.Response);
++FetchProvider.initialize(fetch, Headers, Response);
+ // First, we set up the various platform-specific features for Node (register
+ // the version and declare the Node getAuth function)
+ function getAuth(app = getApp()) {
+diff --git a/node_modules/@firebase/auth/dist/node/index.js b/node_modules/@firebase/auth/dist/node/index.js
+index 8094cf5..63be674 100644
+--- a/node_modules/@firebase/auth/dist/node/index.js
++++ b/node_modules/@firebase/auth/dist/node/index.js
+@@ -7,7 +7,7 @@ require('tslib');
+ require('@firebase/util');
+ require('@firebase/app');
+ require('@firebase/component');
+-require('node-fetch');
++// require('node-fetch');
+ require('@firebase/logger');
+ 
+ 
+diff --git a/node_modules/@firebase/auth/dist/node/internal.js b/node_modules/@firebase/auth/dist/node/internal.js
+index 871e2fd..8134a5b 100644
+--- a/node_modules/@firebase/auth/dist/node/internal.js
++++ b/node_modules/@firebase/auth/dist/node/internal.js
+@@ -7,7 +7,7 @@ var tslib = require('tslib');
+ var util = require('@firebase/util');
+ var app = require('@firebase/app');
+ require('@firebase/component');
+-require('node-fetch');
++// require('node-fetch');
+ require('@firebase/logger');
+ 
+ /**
+diff --git a/node_modules/@firebase/auth/dist/node/totp-9fcfcaa9.js b/node_modules/@firebase/auth/dist/node/totp-9fcfcaa9.js
+index 0b59183..c5f864f 100644
+--- a/node_modules/@firebase/auth/dist/node/totp-9fcfcaa9.js
++++ b/node_modules/@firebase/auth/dist/node/totp-9fcfcaa9.js
+@@ -4,7 +4,7 @@ var tslib = require('tslib');
+ var util = require('@firebase/util');
+ var app = require('@firebase/app');
+ var component = require('@firebase/component');
+-var fetchImpl = require('node-fetch');
++// var fetchImpl = require('node-fetch');
+ var logger = require('@firebase/logger');
+ 
+ function _interopNamespace(e) {
+@@ -25,7 +25,7 @@ function _interopNamespace(e) {
+   return Object.freeze(n);
+ }
+ 
+-var fetchImpl__namespace = /*#__PURE__*/_interopNamespace(fetchImpl);
++// var fetchImpl__namespace = /*#__PURE__*/_interopNamespace(fetchImpl);
+ 
+ /**
+  * @license
+@@ -7791,7 +7791,7 @@ function registerAuth(clientPlatform) {
+  * limitations under the License.
+  */
+ // Initialize the fetch polyfill, the types are slightly off so just cast and hope for the best
+-FetchProvider.initialize(fetchImpl__namespace.default, fetchImpl__namespace.Headers, fetchImpl__namespace.Response);
++FetchProvider.initialize(fetch, Headers, Response);
+ // First, we set up the various platform-specific features for Node (register
+ // the version and declare the Node getAuth function)
+ function getAuth(app$1) {

@@ -1,8 +1,8 @@
 diff --git a/node_modules/next-auth/core/routes/callback.js b/node_modules/next-auth/core/routes/callback.js
-index 2696b2d..4b8fc96 100644
+index d30a999..693fa5f 100644
 --- a/node_modules/next-auth/core/routes/callback.js
 +++ b/node_modules/next-auth/core/routes/callback.js
-@@ -388,6 +388,13 @@ async function callback(params) {
+@@ -390,6 +390,13 @@ async function callback(params) {
        provider: provider.id
      };
  
