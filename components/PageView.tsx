@@ -11,7 +11,7 @@ import useMeasure from 'react-use-measure';
 import { config } from '@/lib/config';
 import { useWindowEvent } from '@/lib/hooks/use-window-event';
 
-pdfjs.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.js';
+pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString();
 
 interface PageViewProps {
   url: string;
